@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - ChatAI</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+        <h1 class="text-2xl font-bold mb-6 text-center text-blue-700">Sign Up for ChatAI</h1>
+        <form id="signupForm" class="space-y-4">
+            <input type="email" id="email" class="w-full border rounded px-3 py-2" placeholder="Email" required />
+            <input type="password" id="password" class="w-full border rounded px-3 py-2" placeholder="Password" required />
+            <input type="text" id="full_name" class="w-full border rounded px-3 py-2" placeholder="Full Name" />
+            <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Sign Up</button>
+        </form>
+        <div class="mt-4 text-center text-sm">
+            Already have an account? <a href="/login" class="text-blue-600 hover:underline">Login</a>
+        </div>
+        <div id="error" class="text-red-600 mt-2 text-center hidden"></div>
+    </div>
+    <script>
+        document.getElementById('signupForm').onsubmit = async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const full_name = document.getElementById('full_name').value;
+            // For demo, business_profile_id is 1. In production, let user select or create.
+            const res = await fetch('/api/v1/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password, full_name, business_profile_id: 1 })
+            });
+            if (res.ok) {
+                const user = await res.json();
+                window.location.href = `/dashboard?user_id=${user.id}`;
+            } else {
+                document.getElementById('error').innerText = 'Registration failed. Email may already be in use.';
+                document.getElementById('error').classList.remove('hidden');
+            }
+        };
+    </script>
+</body>
+</html> 

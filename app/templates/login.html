@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - ChatAI</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+        <h1 class="text-2xl font-bold mb-6 text-center text-blue-700">Login to ChatAI</h1>
+        <form id="loginForm" class="space-y-4">
+            <input type="email" id="email" class="w-full border rounded px-3 py-2" placeholder="Email" required />
+            <input type="password" id="password" class="w-full border rounded px-3 py-2" placeholder="Password" required />
+            <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Login</button>
+        </form>
+        <div class="mt-4 text-center text-sm">
+            Don't have an account? <a href="/signup" class="text-blue-600 hover:underline">Sign up</a>
+        </div>
+        <div id="error" class="text-red-600 mt-2 text-center hidden"></div>
+    </div>
+    <script>
+        document.getElementById('loginForm').onsubmit = async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const res = await fetch('/api/v1/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            if (res.ok) {
+                const data = await res.json();
+                // Fetch user info to check is_admin
+                const userRes = await fetch(`/api/v1/auth/me?token=${data.access_token}`);
+                if (userRes.ok) {
+                    const user = await userRes.json();
+                    if (user.is_admin) {
+                        window.location.href = `/admin?user_id=${user.id}`;
+                    } else {
+                        window.location.href = `/dashboard?user_id=${user.id}`;
+                    }
+                } else {
+                    document.getElementById('error').innerText = 'Login succeeded but failed to fetch user info.';
+                    document.getElementById('error').classList.remove('hidden');
+                }
+            } else {
+                document.getElementById('error').innerText = 'Invalid email or password.';
+                document.getElementById('error').classList.remove('hidden');
+            }
+        };
+    </script>
+</body>
+</html> 

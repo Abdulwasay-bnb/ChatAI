@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard - ChatAI</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="max-w-4xl mx-auto my-8 p-6 bg-white rounded-lg shadow-lg border border-gray-200">
+        <h1 class="text-2xl font-bold mb-4 text-blue-700">User Dashboard</h1>
+        <div id="userInfo" class="mb-6"></div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-blue-50 p-4 rounded shadow">
+                <h2 class="font-semibold text-lg mb-2">Business Settings</h2>
+                <form id="settingsForm" class="space-y-2">
+                    <input type="text" id="businessName" class="w-full border rounded px-3 py-2" placeholder="Business Name" required />
+                    <textarea id="businessSettings" class="w-full border rounded px-3 py-2" placeholder="Settings (JSON)"></textarea>
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Update Settings</button>
+                </form>
+                <div id="settingsMsg" class="text-green-600 mt-2 hidden">Settings updated!</div>
+            </div>
+            <div class="bg-green-50 p-4 rounded shadow">
+                <h2 class="font-semibold text-lg mb-2">Your Chatbots</h2>
+                <ul id="chatbotList" class="mb-4"></ul>
+                <form id="chatbotForm" class="space-y-2">
+                    <input type="text" id="chatbotName" class="w-full border rounded px-3 py-2" placeholder="Chatbot Name" required />
+                    <textarea id="chatbotPrompt" class="w-full border rounded px-3 py-2" placeholder="Prompt"></textarea>
+                    <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Create Chatbot</button>
+                </form>
+                <div id="chatbotMsg" class="text-green-600 mt-2 hidden">Chatbot created!</div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Get user_id from query param
+        function getUserId() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('user_id');
+        }
+        const userId = getUserId();
+        let businessProfileId = null;
+
+        async function loadUserInfo() {
+            // Fetch user info
+            const res = await fetch(`/api/v1/auth/user/${userId}`);
+            if (!res.ok) return;
+            const user = await res.json();
+            document.getElementById('userInfo').innerHTML = `<div class="mb-2">Welcome, <span class="font-semibold text-blue-700">${user.full_name || user.email}</span></div>`;
+            businessProfileId = user.business_profile_id;
+            loadBusinessSettings();
+            loadChatbots();
+        }
+
+        async function loadBusinessSettings() {
+            if (!businessProfileId) return;
+            const res = await fetch(`/api/v1/tenant/${businessProfileId}`);
+            if (!res.ok) return;
+            const profile = await res.json();
+            document.getElementById('businessName').value = profile.name;
+            document.getElementById('businessSettings').value = JSON.stringify(profile.settings, null, 2);
+        }
+
+        document.getElementById('settingsForm').onsubmit = async function(e) {
+            e.preventDefault();
+            const name = document.getElementById('businessName').value;
+            let settings;
+            try {
+                settings = JSON.parse(document.getElementById('businessSettings').value);
+            } catch {
+                document.getElementById('settingsMsg').innerText = 'Invalid JSON in settings!';
+                document.getElementById('settingsMsg').classList.remove('hidden');
+                return;
+            }
+            const res = await fetch(`/api/v1/tenant/${businessProfileId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, settings })
+            });
+            if (res.ok) {
+                document.getElementById('settingsMsg').innerText = 'Settings updated!';
+                document.getElementById('settingsMsg').classList.remove('hidden');
+            } else {
+                document.getElementById('settingsMsg').innerText = 'Failed to update settings.';
+                document.getElementById('settingsMsg').classList.remove('hidden');
+            }
+        };
+
+        async function loadChatbots() {
+            const res = await fetch(`/api/v1/chatbot/?user_id=${userId}`);
+            if (!res.ok) return;
+            const bots = await res.json();
+            const list = document.getElementById('chatbotList');
+            list.innerHTML = '';
+            bots.forEach(bot => {
+                const li = document.createElement('li');
+                li.className = 'mb-2';
+                li.innerHTML = `<span class="font-bold">${bot.name}</span> <span class="text-xs text-gray-500">(ID: ${bot.id})</span><div class="text-xs text-gray-600 truncate">Prompt: ${bot.prompt}</div>`;
+                list.appendChild(li);
+            });
+        }
+
+        document.getElementById('chatbotForm').onsubmit = async function(e) {
+            e.preventDefault();
+            const name = document.getElementById('chatbotName').value;
+            const prompt = document.getElementById('chatbotPrompt').value;
+            const res = await fetch('/api/v1/chatbot/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, prompt, owner_id: userId, business_profile_id: businessProfileId })
+            });
+            if (res.ok) {
+                document.getElementById('chatbotMsg').innerText = 'Chatbot created!';
+                document.getElementById('chatbotMsg').classList.remove('hidden');
+                loadChatbots();
+            } else {
+                document.getElementById('chatbotMsg').innerText = 'Failed to create chatbot.';
+                document.getElementById('chatbotMsg').classList.remove('hidden');
+            }
+        };
+
+        loadUserInfo();
+    </script>
+</body>
+</html> 
