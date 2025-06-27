@@ -14,7 +14,7 @@ from models.chatbot import Chatbot
 from models.tenant import BusinessProfile
 import models  
 from api.v1.endpoints.auth import get_current_user_from_cookie, get_current_user_from_cookie_optional
-
+# Intialze APP
 app = FastAPI(
     title="ChatAI SaaS Chatbot Service",
     description="A SaaS platform for businesses to create and embed chatbots.",
