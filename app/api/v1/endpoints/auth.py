@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Body, Cookie, Response, Security
 from sqlalchemy.orm import Session
-from core.config import get_db
+from app.core.config import get_db
 from app.models.user import User
 from app.schemas.user import UserCreate, UserRead
 from app.core.security import hash_password, verify_password, create_access_token, decode_access_token, is_strong_password
