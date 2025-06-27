@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, Security
 from sqlalchemy.orm import Session
 from core.config import get_db
 from models.chatbot import Chatbot
@@ -11,6 +11,8 @@ import json
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 import os
+from api.v1.endpoints.auth import get_current_user_from_cookie
+from services.chatbot_service import ChatbotService
 
 router = APIRouter()
 
@@ -29,33 +31,19 @@ def get_embed_link(user_id: int, request: Request, db: Session = Depends(get_db)
 
 @router.post("/", response_model=ChatbotRead)
 def create_chatbot(chatbot: ChatbotCreate, db: Session = Depends(get_db)):
-    db_chatbot = Chatbot(**chatbot.dict())
-    db.add(db_chatbot)
-    db.commit()
-    db.refresh(db_chatbot)
-    return db_chatbot
+    return ChatbotService.create_chatbot(chatbot, db)
 
 @router.get("/", response_model=List[ChatbotRead])
-def list_chatbots(db: Session = Depends(get_db)):
-    return db.query(Chatbot).all()
+def list_chatbots(business_profile_id: int = None, db: Session = Depends(get_db)):
+    return ChatbotService.list_chatbots(business_profile_id, db)
 
 @router.get("/{chatbot_id}", response_model=ChatbotRead)
 def get_chatbot(chatbot_id: int, db: Session = Depends(get_db)):
-    chatbot = db.query(Chatbot).filter(Chatbot.id == chatbot_id).first()
-    if not chatbot:
-        raise HTTPException(status_code=404, detail="Chatbot not found")
-    return chatbot
+    return ChatbotService.get_chatbot(chatbot_id, db)
 
 @router.put("/{chatbot_id}", response_model=ChatbotRead)
 def update_chatbot(chatbot_id: int, chatbot: ChatbotCreate, db: Session = Depends(get_db)):
-    db_chatbot = db.query(Chatbot).filter(Chatbot.id == chatbot_id).first()
-    if not db_chatbot:
-        raise HTTPException(status_code=404, detail="Chatbot not found")
-    for key, value in chatbot.dict().items():
-        setattr(db_chatbot, key, value)
-    db.commit()
-    db.refresh(db_chatbot)
-    return db_chatbot
+    return ChatbotService.update_chatbot(chatbot_id, chatbot, db)
 
 class ChatRequest(BaseModel):
     prompt: str
@@ -64,28 +52,13 @@ class ChatRequest(BaseModel):
 
 @router.post("/chat")
 def chat_with_bot(request: ChatRequest, db: Session = Depends(get_db)):
-    pipe = config.PIPE
-    llm_model = config.LLM_MODEL
-    prompt = request.prompt
-    chatbot = db.query(Chatbot).filter(Chatbot.id == request.chatbot_id).first()
-    if not chatbot:
-        raise HTTPException(status_code=404, detail="Chatbot not found")
-    # Optionally, add chatbot.prompt or settings to the prompt
-    full_prompt = f"{chatbot.prompt}\n{prompt}" if chatbot.prompt else prompt
-    try:
-        response = pipe(
-            model=llm_model,
-            messages=[{'role': 'user', 'content': full_prompt}]
-        )
-        if hasattr(response, 'message') and hasattr(response.message, 'content'):
-            content = response.message.content
-        elif isinstance(response, dict) and 'message' in response:
-            content = response['message']['content']
-        else:
-            content = str(response)
-        try:
-            return json.loads(content)
-        except Exception:
-            return {"response": content}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e)) 
+    return ChatbotService.chat_with_bot(request.chatbot_id, request.prompt, request.user_id, db)
+
+def admin_required(user: User = Depends(get_current_user_from_cookie)):
+    if not user or not user.is_admin:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    return user
+
+@router.delete("/{chatbot_id}")
+def delete_chatbot_by_admin(chatbot_id: int, db: Session = Depends(get_db), admin: User = Depends(admin_required)):
+    return ChatbotService.delete_chatbot(chatbot_id, db) 

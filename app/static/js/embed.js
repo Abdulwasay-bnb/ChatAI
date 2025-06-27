@@ -3,7 +3,7 @@
     // Add Tailwind CDN if not present
     if (!document.getElementById('tailwind-cdn')) {
         var tw = document.createElement('script');
-        tw.src = 'https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4';
+        tw.src = '/static/js/tailwind.min.js'; 
         tw.id = 'tailwind-cdn';
         document.head.appendChild(tw);
     }
@@ -48,7 +48,7 @@
             var userId = getUserId();
             console.log('Chatbot user_id:', userId); // Debug
             var frame = document.getElementById('chatbotFrame');
-            frame.src = `https://blj5f8xg-8000.inc1.devtunnels.ms/api/v1/chatbot/view?user_id=${userId}`;
+            frame.src = `/api/v1/chatbot/view?user_id=${userId}`;
         }
     };
     document.getElementById('closeChatbot').onclick = function() {

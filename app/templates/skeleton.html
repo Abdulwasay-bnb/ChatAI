@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en" x-data="{ dark: localStorage.getItem('theme') === 'dark' }" x-init="if(dark){document.documentElement.classList.add('dark')}else{document.documentElement.classList.remove('dark')}" :class="{ 'dark': dark }">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatAI - Transform Your Business with AI-Powered Chatbots</title>
+    <!-- Use FastAPI's url_for for static files -->
+    <script src="{{ url_for('static', path='js/tailwind.js') }}"></script>
+    <script src="{{ url_for('static', path='js/tailwind_config.js') }}"></script>
+    <script src="{{ url_for('static', path='js/three.min.js') }}"></script>
+    {%block extrastyle%}
+    
+    {%endblock%}
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800;900&display=swap');
+        body{
+            overflow-x:hidden;
+        }
+        /* Base styles */
+        .particle {
+          position: absolute;
+          border-radius: 50%;
+          pointer-events: none;
+          transition: background-color 1s ease;
+        }
+        .dark .connection-line {
+          stroke: rgba(59, 130, 246, 0.3);
+        }
+    
+        .connection-line {
+          stroke: rgba(79, 70, 229, 0.2);
+          stroke-width: 1;
+        }
+    
+        /* Light mode animation */
+        .light-animation {
+          display: none;
+        }
+    
+        .light .light-animation {
+          display: block;
+        }
+    
+        .light .dark-animation {
+          display: none;
+        }
+    
+        /* Dark mode animation */
+        .dark-animation {
+          display: none;
+        }
+    
+        .dark .dark-animation {
+          display: block;
+        }
+    
+        /* Grid Effect */
+        .grid-effect {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-image: 
+            linear-gradient(to right, rgba(59, 130, 246, 0.05) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(59, 130, 246, 0.05) 1px, transparent 1px);
+          background-size: 40px 40px;
+          opacity: 0.5;
+          pointer-events: none;
+        }
+  
+        .dark .grid-effect {
+          background-image: 
+            linear-gradient(to right, rgba(147, 112, 219, 0.05) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(147, 112, 219, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+  
+        /* Rinnegan Effect */
+        .rinnegan-container {
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 600px;
+          height: 600px;
+          opacity: 0.1;
+          pointer-events: none;
+        }
+  
+        .rinnegan-circle {
+          position: absolute;
+          border-radius: 50%;
+          border: 1px solid rgba(147, 112, 219, 0.3);
+          transform-origin: center;
+          animation: rinneganRotate 20s linear infinite;
+        }
+  
+        .c1 { width: 100%; height: 100%; }
+        .c2 { width: 70%; height: 70%; top: 15%; left: 15%; animation-direction: reverse; }
+        .c3 { width: 40%; height: 40%; top: 30%; left: 30%; }
+  
+        .rinnegan-lines {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          animation: rinneganRotate 30s linear infinite;
+        }
+  
+        .rinnegan-lines::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 50%;
+          width: 1px;
+          height: 100%;
+          background: linear-gradient(180deg, 
+            transparent,
+            rgba(147, 112, 219, 0.3),
+            transparent
+          );
+        }
+  
+        .rinnegan-lines::after {
+          content: '';
+          position: absolute;
+          top: 50%;
+          left: 0;
+          width: 100%;
+          height: 1px;
+          background: linear-gradient(90deg,
+            transparent,
+            rgba(147, 112, 219, 0.3),
+            transparent
+          );
+        }
+  
+        @keyframes rinneganRotate {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+  
+        .dark .rinnegan-circle,
+        .dark .rinnegan-lines::before,
+        .dark .rinnegan-lines::after {
+          border-color: rgba(147, 112, 219, 0.3);
+          background: linear-gradient(180deg,
+            transparent,
+            rgba(147, 112, 219, 0.3),
+            transparent
+          );
+        }
+  
+        /* Light mode variations */
+        :not(.dark) .rinnegan-circle,
+        :not(.dark) .rinnegan-lines::before,
+        :not(.dark) .rinnegan-lines::after {
+          border-color: rgba(59, 130, 246, 0.3);
+          background: linear-gradient(180deg,
+            transparent,
+            rgba(59, 131, 246, 0.1),
+            transparent
+          );
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #8B5CF6 0%, #06B6D4 50%, #10B981 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero-gradient {
+            background: radial-gradient(circle at 20% 50%, #8B5CF6 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, #06B6D4 0%, transparent 50%),
+                        radial-gradient(circle at 40% 80%, #10B981 0%, transparent 50%),
+                        #fff;
+        }
+        
+        .dark .hero-gradient {
+            background: radial-gradient(circle at 20% 50%, #8B5CF6 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, #06B6D4 0%, transparent 50%),
+                        radial-gradient(circle at 40% 80%, #10B981 0%, transparent 50%),
+                        #030409;
+        }
+        
+        .glass-card {
+            background: rgba(255,255,255,0.7);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(15,23,42,0.08);
+            transition: background 0.3s, border 0.3s;
+        }
+        
+        .dark .glass-card {
+            background: rgba(30,41,59,0.85);
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        
+        .neon-glow {
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.3), 0 0 40px rgba(139, 92, 246, 0.1);
+        }
+        
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        .pulse-ring {
+            animation: pulse-ring 2s infinite;
+        }
+        
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes pulse-ring {
+            0% { transform: scale(0.8); opacity: 1; }
+            100% { transform: scale(2.4); opacity: 0; }
+        }
+        
+        @keyframes gradient-shift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        .gradient-animate {
+            background: linear-gradient(-45deg, #8B5CF6, #06B6D4, #10B981, #F59E0B);
+            background-size: 400% 400%;
+            animation: gradient-shift 8s ease infinite;
+        }
+        
+        .perspective-card {
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+        }
+        
+        .perspective-card:hover {
+            transform: rotateY(5deg) rotateX(5deg);
+        }
+        
+        /* New: Ensure all sections are full width and responsive */
+        .container-wide {
+            width: 100%;
+            max-width: 1440px;
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: 2rem;
+            padding-right: 2rem;
+        }
+        
+        @media (max-width: 1024px) {
+            .container-wide {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+        }
+    </style>
+</head>
+<body class="bg-light-primary text-light-text dark:bg-dark-900 dark:text-dark-text transition-colors duration-300 w-full">   
+{%include "navbar.html"%}
+<div style="min-height: 92vh; place-content:center;" class="bg-light-primary text-light-text dark:bg-dark-700 dark:text-dark-text transition-colors duration-300 w-full">
+    {%block content%}
+    {%endblock%}
+</div>
+{%include "footer.html"%}
+   
+{%block extrajs %}
+{%endblock%}
+<script>
+// Dark mode toggle icon logic
+(function() {
+    const btn = document.getElementById('theme-toggle-btn');
+    if (!btn) return;
+    const svg = btn.querySelector('svg');
+    function updateIcon() {
+        const isDark = document.documentElement.classList.contains('dark');
+        if (!svg) return;
+        svg.querySelector('.sun').style.display = isDark ? 'none' : 'block';
+        svg.querySelector('.moon').style.display = isDark ? 'block' : 'none';
+    }
+    updateIcon();
+    btn.addEventListener('click', function() {
+        setTimeout(updateIcon, 10);
+    });
+    // Also update on page load if theme changes elsewhere
+    window.addEventListener('storage', updateIcon);
+})();
+</script>
+</body>
+</html>

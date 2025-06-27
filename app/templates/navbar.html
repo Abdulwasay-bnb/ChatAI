@@ -1,0 +1,137 @@
+<nav class="fixed top-0 w-full z-50 backdrop-blur-2xl bg-transparent/5 text-light-text dark:bg-dark-primary dark:text-dark-text transition-colors duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+            <!-- Logo -->
+            <a href="{{ url_for('home') }}" class="flex items-center space-x-2">
+                <div class="w-8 h-8 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-lg flex items-center justify-center">
+                    <span class="text-white font-bold text-sm">AI</span>
+                </div>
+                <span class="text-2xl font-black gradient-text">ChatAI</span>
+            </a>
+
+            <!-- Desktop Navigation -->
+            <div class="hidden md:flex items-center space-x-8">
+                {% if user_authenticated %}
+                <a href="{{ url_for('home') }}" class="text-light-text dark:text-dark-text hover:text-purple-500 dark:hover:text-cyan-400 transition-all hover:scale-105 font-bold">Home</a>
+                <a href="{{ url_for('dashboard_page') }}{% if user_id %}?user_id={{ user_id }}{% endif %}" class="text-light-text dark:text-dark-text hover:text-emerald-500 dark:hover:text-emerald-400 transition-all hover:scale-105 font-bold">Dashboard</a>
+                {% endif %}
+            </div>
+
+            <!-- Profile Dropdown & Mobile Menu -->
+            <div class="flex items-center space-x-2">
+                <!-- Mobile menu button -->
+                <button id="mobile-menu-btn" class="md:hidden p-2 rounded focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+                <!-- Profile Dropdown -->
+                <div class="relative">
+                    <button id="profile-menu-btn" class="flex items-center gap-2 px-3 py-2 rounded-full border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm hover:shadow-lg transition focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        <svg class="w-6 h-6 text-purple-500 dark:text-cyan-400" fill="currentColor" viewBox="0 0 24 24">
+                            <circle cx="12" cy="8" r="4" />
+                            <path d="M4 20c0-2.2 3.6-4 8-4s8 1.8 8 4v1H4v-1z" />
+                        </svg>
+                        {% if user_authenticated %}
+                            <span class="hidden sm:inline text-gray-800 dark:text-gray-200">{{ user.full_name or user.email }}</span>
+                        {% else %}
+                            <span class="hidden sm:inline text-gray-800 dark:text-gray-200">Profile</span>
+                        {% endif %}
+                        <svg class="w-4 h-4 ml-1 text-gray-500 dark:text-gray-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div id="profile-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-lg shadow-lg py-2 z-50">
+                        {% if not user_authenticated %}
+                        <a href="{{ url_for('login_page') }}" class="block px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-purple-100 dark:hover:bg-slate-700">Sign In</a>
+                        {% else %}
+                        {% if user and user.is_admin %}
+                        <a href="{{ url_for('admin_panel') }}?user_id={{ user.id }}" class="block px-4 py-2 text-gray-700 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-700">Admin</a>
+                        {% endif %}
+                        <form id="logoutForm" action="{{ url_for('auth.logout') }}" method="post">
+                            <button type="submit" class="w-full text-left px-4 py-2 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-slate-700">Logout</button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+                <!-- Dark/Light Mode Toggle -->
+                <button id="theme-toggle-btn" onclick="document.documentElement.classList.toggle('dark'); localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';" aria-label="Toggle dark mode" class="ml-2 p-2 rounded-full border border-light-primary dark:border-dark-primary bg-transparent/10 dark:bg-dark-primary hover:bg-transparent/10/80 dark:hover:bg-dark-primary/80 transition-colors">
+                    <svg class="w-5 h-5 transition-colors duration-300" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <g class="sun" style="display: block;">
+                            <circle cx="12" cy="12" r="5" fill="currentColor" class="text-yellow-400 dark:text-gray-400"/>
+                            <g stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="1" x2="12" y2="3"/>
+                                <line x1="12" y1="21" x2="12" y2="23"/>
+                                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                                <line x1="1" y1="12" x2="3" y2="12"/>
+                                <line x1="21" y1="12" x2="23" y2="12"/>
+                                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                            </g>
+                        </g>
+                        <g class="moon" style="display: none;">
+                            <path d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z" fill="currentColor" class="text-gray-900 dark:text-yellow-300"/>
+                        </g>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="md:hidden hidden flex-col space-y-2 mt-2 bg-white dark:bg-slate-800 rounded-lg shadow-lg p-4">
+            {% if user_authenticated %}
+            <a href="{{ url_for('dashboard_page') }}{% if user_id %}?user_id={{ user_id }}{% endif %}" class="block text-light-text dark:text-dark-text hover:text-emerald-500 dark:hover:text-emerald-400 font-bold">Dashboard</a>
+            <a href="{{ url_for('home') }}" class="block text-light-text dark:text-dark-text hover:text-purple-500 dark:hover:text-cyan-400 font-bold">Home</a>
+            {% if user and user.is_admin %}
+            <a href="{{ url_for('admin_panel') }}?user_id={{ user.id }}" class="block text-light-text dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-slate-700 font-bold">Admin</a>
+            <form id="mobileLogoutForm" action="{{ url_for('auth.logout') }}" method="post">
+                <button type="submit" class="w-full text-left px-4 py-2 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-slate-700">Logout</button>
+            </form>
+            {% endif %}
+            {% else %}
+            <a href="{{ url_for('login_page') }}" class="block px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-purple-100 dark:hover:bg-slate-700">Sign In</a>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+<script>
+// Profile dropdown toggle
+const profileBtn = document.getElementById('profile-menu-btn');
+const profileDropdown = document.getElementById('profile-dropdown');
+if (profileBtn && profileDropdown) {
+    profileBtn.onclick = function(e) {
+        e.stopPropagation();
+        profileDropdown.classList.toggle('hidden');
+    };
+    document.addEventListener('click', function(e) {
+        if (!profileDropdown.contains(e.target) && e.target !== profileBtn) {
+            profileDropdown.classList.add('hidden');
+        }
+    });
+}
+// Mobile menu toggle
+const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+const mobileMenu = document.getElementById('mobile-menu');
+if (mobileMenuBtn && mobileMenu) {
+    mobileMenuBtn.onclick = function() {
+        mobileMenu.classList.toggle('hidden');
+    };
+}
+// Logout AJAX for both desktop and mobile
+const logoutForm = document.getElementById('logoutForm');
+if (logoutForm) {
+    logoutForm.onsubmit = async function(e) {
+        e.preventDefault();
+        await fetch(this.action, {method: 'POST', credentials: 'same-origin'});
+        window.location.href = '/';
+    };
+}
+const mobileLogoutForm = document.getElementById('mobileLogoutForm');
+if (mobileLogoutForm) {
+    mobileLogoutForm.onsubmit = async function(e) {
+        e.preventDefault();
+        await fetch(this.action, {method: 'POST', credentials: 'same-origin'});
+        window.location.href = '/';
+    };
+}
+</script>
