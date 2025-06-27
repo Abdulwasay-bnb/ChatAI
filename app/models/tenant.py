@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, JSON
 from sqlalchemy.orm import relationship
-from core.config import Base
+from app.core.config import Base
 
 class BusinessProfile(Base):
     __tablename__ = "business_profiles"
