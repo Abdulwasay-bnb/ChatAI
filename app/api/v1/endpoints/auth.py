@@ -3,10 +3,10 @@
 from fastapi import APIRouter, Depends, HTTPException, Query, Body, Cookie, Response, Security
 from sqlalchemy.orm import Session
 from core.config import get_db
-from models.user import User
-from schemas.user import UserCreate, UserRead
-from core.security import hash_password, verify_password, create_access_token, decode_access_token, is_strong_password
-from models.tenant import BusinessProfile
+from app.models.user import User
+from app.schemas.user import UserCreate, UserRead
+from app.core.security import hash_password, verify_password, create_access_token, decode_access_token, is_strong_password
+from app.models.tenant import BusinessProfile
 from datetime import datetime, timedelta
 from typing import Optional
 

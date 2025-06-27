@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, JSON
 from sqlalchemy.orm import relationship
-from core.config import Base
+from app.core.config import Base
 
 class Chatbot(Base):
     __tablename__ = "chatbots"

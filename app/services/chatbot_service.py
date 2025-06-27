@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
-from models.chatbot import Chatbot
-from schemas.chatbot import ChatbotCreate
-from core import config
+from app.models.chatbot import Chatbot
+from app.schemas.chatbot import ChatbotCreate
+from app.core import config
 from fastapi import HTTPException
 import json
 

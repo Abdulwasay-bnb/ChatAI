@@ -1,18 +1,18 @@
 from fastapi import APIRouter, Depends, HTTPException, Request, Security
 from sqlalchemy.orm import Session
-from core.config import get_db
-from models.chatbot import Chatbot
-from models.user import User
-from schemas.chatbot import ChatbotCreate, ChatbotRead
+from app.core.config import get_db
+from app.models.chatbot import Chatbot
+from app.models.user import User
+from app.schemas.chatbot import ChatbotCreate, ChatbotRead
 from typing import List
-from core import config
+from app.core import config
 from pydantic import BaseModel
 import json
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 import os
-from api.v1.endpoints.auth import get_current_user_from_cookie
-from services.chatbot_service import ChatbotService
+from app.api.v1.endpoints.auth import get_current_user_from_cookie
+from app.services.chatbot_service import ChatbotService
 
 router = APIRouter()
 

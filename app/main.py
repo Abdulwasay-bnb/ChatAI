@@ -3,17 +3,17 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from typing import Union
-from api.v1.endpoints import chatbot, auth, tenant
+from app.api.v1.endpoints import chatbot, auth, tenant
 import typer
 import subprocess
 import os
 from sqlalchemy.orm import Session
-from core.config import get_db, Base
-from models.user import User
-from models.chatbot import Chatbot
-from models.tenant import BusinessProfile
-import models  
-from api.v1.endpoints.auth import get_current_user_from_cookie, get_current_user_from_cookie_optional
+from app.core.config import get_db, Base
+from app.models.user import User
+from app.models.chatbot import Chatbot
+from app.models.tenant import BusinessProfile
+import app.models  
+from app.api.v1.endpoints.auth import get_current_user_from_cookie, get_current_user_from_cookie_optional
 # Intialze APP
 app = FastAPI(
     title="ChatAI SaaS Chatbot Service",
