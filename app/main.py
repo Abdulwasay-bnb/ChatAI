@@ -137,8 +137,8 @@ def makemigrations(message: str = "auto migration"):
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'app')))
-from core.config import engine, Base, SQLALCHEMY_DATABASE_URL
-import models  # Ensure all models are imported
+from app.core.config import engine, Base, SQLALCHEMY_DATABASE_URL
+import app.models  # Ensure all models are imported
 from alembic import context
 config = context.config
 target_metadata = Base.metadata
@@ -174,6 +174,35 @@ else:
 def migrate():
     """Apply migrations to the database (like Django's migrate)."""
     subprocess.run(["alembic", "upgrade", "head"], check=True)
+
+@cli.command()
+def create_admin(email: str = typer.Option(..., prompt=True), password: str = typer.Option(..., prompt=True, hide_input=True), full_name: str = typer.Option('', prompt="Full name (optional)", show_default=False)):
+    """Create an admin user."""
+    from app.core.config import SessionLocal
+    from app.models.user import User
+    from app.models.tenant import BusinessProfile
+    from app.core.security import hash_password, is_strong_password
+    db = SessionLocal()
+    try:
+        if db.query(User).filter(User.email == email).first():
+            typer.echo("User with this email already exists.")
+            raise typer.Exit(code=1)
+        if not is_strong_password(password):
+            typer.echo("Password is not strong enough.")
+            raise typer.Exit(code=1)
+        # Create a business profile for the admin
+        business_name = full_name or email
+        profile = BusinessProfile(name=business_name, settings={})
+        db.add(profile)
+        db.commit()
+        db.refresh(profile)
+        hashed_password = hash_password(password)
+        admin_user = User(email=email, hashed_password=hashed_password, full_name=full_name, is_admin=True, is_active=True, business_profile_id=profile.id)
+        db.add(admin_user)
+        db.commit()
+        typer.echo(f"Admin user '{email}' created successfully.")
+    finally:
+        db.close()
 
 if __name__ == "__main__":
     cli() 

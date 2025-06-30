@@ -1,7 +1,7 @@
 {% extends "skeleton.html" %}
 {%block content%}
-<section class="hero-gradient min-h-screen flex items-center justify-center py-16 transition-colors duration-300">
-    <div class="glass-card rounded-3xl shadow-2xl p-10 w-full max-w-md border-2 border-transparent bg-light-primary/80 dark:bg-dark-primary/80 backdrop-blur-xl relative animate-fade-in-up">
+<section class="hero-gradient min-h-screen flex items-center justify-center py-16 transition-colors duration-300 mt-16">
+    <div class="glass-card rounded-3xl shadow-2xl dark:shadow-cyan-900/40 p-10 w-full max-w-md border-2 border-transparent bg-white/30 dark:bg-black/20 backdrop-blur-xl relative animate-fade-in-up">
         <div class="flex flex-col items-center mb-6">
             <div class="w-16 h-16 bg-gradient-to-br from-purple-500 via-cyan-500 to-emerald-500 rounded-2xl flex items-center justify-center mb-2 neon-glow">
                 <span class="text-white font-black text-2xl">AI</span>
@@ -11,11 +11,11 @@
         </div>
         <form id="loginForm" class="space-y-5">
             <div class="relative">
-                <input type="email" id="email" class="w-full border rounded-lg px-4 py-3 bg-light-primary/80 text-light-text dark:bg-dark-primary/80 dark:text-dark-text border-light-primary dark:border-dark-primary focus:ring-2 focus:ring-purple-400 transition" placeholder="Email" required />
+                <input type="email" id="email" class="w-full border rounded-lg px-4 py-3 bg-white text-light-text dark:bg-dark-primary/80 dark:text-dark-text border-light-primary dark:border-dark-primary focus:ring-2 focus:ring-purple-400 transition" placeholder="Email" required />
                 <span class="absolute right-3 top-1/2 -translate-y-1/2 text-purple-400"><svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 12H8m8 0a4 4 0 11-8 0 4 4 0 018 0z"/></svg></span>
             </div>
             <div class="relative">
-                <input type="password" id="password" class="w-full border rounded-lg px-4 py-3 bg-light-primary/80 text-light-text dark:bg-dark-primary/80 dark:text-dark-text border-light-primary dark:border-dark-primary focus:ring-2 focus:ring-cyan-400 transition" placeholder="Password" required />
+                <input type="password" id="password" class="w-full border rounded-lg px-4 py-3 bg-white text-light-text dark:bg-dark-primary/80 dark:text-dark-text border-light-primary dark:border-dark-primary focus:ring-2 focus:ring-cyan-400 transition" placeholder="Password" required />
                 <span class="absolute right-3 top-1/2 -translate-y-1/2 text-cyan-400"><svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 17a5 5 0 100-10 5 5 0 000 10z"/></svg></span>
             </div>
             <button type="submit" class="w-full bg-gradient-to-r from-purple-500 via-cyan-500 to-emerald-500 text-white py-3 rounded-xl font-bold shadow-lg hover:scale-105 transition-all neon-glow gradient-animate">Sign In</button>

@@ -2,12 +2,12 @@
 {% block content %}
 <div class="flex mt-16 min-h-screen">
     <!-- Sidebar -->
-    <aside class="w-64 bg-gradient-to-b from-blue-700 to-blue-900 text-white flex flex-col py-8 px-4 shadow-xl rounded-r-3xl">
+    <aside class="w-64 backdrop-blur-2xl bg-transparent/5 text-white flex flex-col py-8 px-4 shadow-xl rounded-r-3xl">
         <div class="mb-10 text-2xl font-black tracking-wide gradient-text">Admin Panel</div>
-        <nav class="flex flex-col gap-4">
-            <button class="sidebar-btn py-2 px-4 rounded-lg text-left hover:bg-blue-600 transition" data-tab="users">Users</button>
-            <button class="sidebar-btn py-2 px-4 rounded-lg text-left hover:bg-blue-600 transition" data-tab="chatbots">Chatbots</button>
-            <button class="sidebar-btn py-2 px-4 rounded-lg text-left hover:bg-blue-600 transition" data-tab="tenants">Business Profiles</button>
+        <nav class="flex flex-col gap-2">
+            <button class="sidebar-btn py-2 px-4 bg-transparent/40 rounded-lg text-left hover:bg-blue-600 transition" data-tab="users">Users</button>
+            <button class="sidebar-btn py-2 px-4 bg-transparent/40 rounded-lg text-left hover:bg-blue-600 transition" data-tab="chatbots">Chatbots</button>
+            <button class="sidebar-btn py-2 px-4 bg-transparent/40 rounded-lg text-left hover:bg-blue-600 transition" data-tab="tenants">Business Profiles</button>
         </nav>
         <div class="mt-auto text-xs text-blue-200 pt-8">&copy; {{ 2025 }} ChatAI Admin Panel</div>
     </aside>
@@ -26,7 +26,7 @@
             <div class="overflow-x-auto rounded-xl shadow">
                 <table class="min-w-full bg-white dark:bg-slate-800">
                     <thead>
-                        <tr class="bg-blue-100 dark:bg-slate-700">
+                        <tr class="bg-blue-50 dark:bg-slate-700">
                             <th class="py-2 px-4 text-left">Name</th>
                             <th class="py-2 px-4 text-left">Email</th>
                             <th class="py-2 px-4 text-left">Business</th>
