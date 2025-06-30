@@ -1,11 +1,23 @@
 // Embeddable Chatbot Widget
 (function() {
-    // Use EMBED_HOST if defined, otherwise fallback
-    var host = typeof window.EMBED_HOST !== 'undefined' ? window.EMBED_HOST : window.location.origin;
+    // Determine host: from script src, window.EMBED_HOST, or window.location.origin
+    var host = null;
+    var scripts = document.getElementsByTagName('script');
+    for (var i = scripts.length - 1; i >= 0; i--) {
+        var s = scripts[i];
+        if (s.src && s.src.indexOf('embed.js') !== -1) {
+            try {
+                var url = new URL(s.src);
+                host = url.origin;
+                break;
+            } catch (e) {}
+        }
+    }
+    if (!host) host = typeof window.EMBED_HOST !== 'undefined' ? window.EMBED_HOST : window.location.origin;
     // Add Tailwind CDN if not present
     if (!document.getElementById('tailwind-cdn')) {
         var tw = document.createElement('script');
-        tw.src = `${host}/static/js/tailwind.min.js`; 
+        tw.src = `${host}/static/js/tailwind.min.js`;
         tw.id = 'tailwind-cdn';
         document.head.appendChild(tw);
     }

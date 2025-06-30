@@ -56,3 +56,5 @@ else:
     from openai import OpenAI
     CLIENT = OpenAI(api_key=OPENAI_API_KEY)
     PIPE = CLIENT.chat.completions.create 
+
+FRONTEND_HOST = os.environ.get("FRONTEND_HOST", None) 

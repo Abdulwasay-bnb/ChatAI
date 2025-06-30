@@ -25,8 +25,8 @@ def chatbot_view(user_id: int, request: Request):
 
 @router.get("/embed/{user_id}")
 def get_embed_link(user_id: int, request: Request, db: Session = Depends(get_db)):
-    # Return a JS snippet link filtered by user
-    base_url = str(request.base_url).rstrip("/")
+    # Use FRONTEND_HOST from config if set, otherwise fallback to request.base_url
+    base_url = config.FRONTEND_HOST.rstrip("/") if config.FRONTEND_HOST else str(request.base_url).rstrip("/")
     return {"embed_link": f"{base_url}/static/js/embed.js?user_id={user_id}"}
 
 @router.post("/", response_model=ChatbotRead)
