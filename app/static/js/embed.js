@@ -1,9 +1,11 @@
 // Embeddable Chatbot Widget
 (function() {
+    // Use EMBED_HOST if defined, otherwise fallback
+    var host = typeof window.EMBED_HOST !== 'undefined' ? window.EMBED_HOST : window.location.origin;
     // Add Tailwind CDN if not present
     if (!document.getElementById('tailwind-cdn')) {
         var tw = document.createElement('script');
-        tw.src = '/static/js/tailwind.min.js'; 
+        tw.src = `${host}/static/js/tailwind.min.js`; 
         tw.id = 'tailwind-cdn';
         document.head.appendChild(tw);
     }
@@ -48,7 +50,7 @@
             var userId = getUserId();
             console.log('Chatbot user_id:', userId); // Debug
             var frame = document.getElementById('chatbotFrame');
-            frame.src = `/api/v1/chatbot/view?user_id=${userId}`;
+            frame.src = `${host}/api/v1/chatbot/view?user_id=${userId}`;
         }
     };
     document.getElementById('closeChatbot').onclick = function() {
