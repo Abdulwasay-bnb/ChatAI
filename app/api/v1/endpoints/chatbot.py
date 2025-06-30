@@ -34,8 +34,8 @@ def create_chatbot(chatbot: ChatbotCreate, db: Session = Depends(get_db)):
     return ChatbotService.create_chatbot(chatbot, db)
 
 @router.get("/", response_model=List[ChatbotRead])
-def list_chatbots(business_profile_id: int = None, db: Session = Depends(get_db)):
-    return ChatbotService.list_chatbots(business_profile_id, db)
+def list_chatbots(business_profile_id: int = None, user_id: int = None, db: Session = Depends(get_db)):
+    return ChatbotService.list_chatbots(business_profile_id, user_id, db)
 
 @router.get("/{chatbot_id}", response_model=ChatbotRead)
 def get_chatbot(chatbot_id: int, db: Session = Depends(get_db)):

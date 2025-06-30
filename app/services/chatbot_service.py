@@ -15,10 +15,13 @@ class ChatbotService:
         return db_chatbot
 
     @staticmethod
-    def list_chatbots(business_profile_id: int, db: Session):
-        if business_profile_id is None:
-            return []
-        return db.query(Chatbot).filter(Chatbot.business_profile_id == business_profile_id).all()
+    def list_chatbots(business_profile_id: int = None, user_id: int = None, db: Session = None):
+        query = db.query(Chatbot)
+        if business_profile_id is not None:
+            query = query.filter(Chatbot.business_profile_id == business_profile_id)
+        if user_id is not None:
+            query = query.filter(Chatbot.owner_id == user_id)
+        return query.all()
 
     @staticmethod
     def get_chatbot(chatbot_id: int, db: Session) -> Chatbot:
