@@ -1,100 +1,279 @@
-<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<style>
+:root {
+  --bg-main-light: #fff;
+  --bg-main-dark: #18191a;
+  --bg-chat-light: #f5f6fa;
+  --bg-chat-dark: #232526;
+  --border-light: #e0e0e0;
+  --border-dark: #333;
+  --user-msg-light: #222;
+  --user-msg-dark: #fff;
+  --user-bubble-light: #e5e5e5;
+  --user-bubble-dark: #444;
+  --bot-msg-light: #fff;
+  --bot-msg-dark: #232526;
+  --bot-bubble-light: #222;
+  --bot-bubble-dark: #fff;
+  --primary: #222;
+  --primary-dark: #fff;
+  --accent: #888;
+  --accent-dark: #bbb;
+}
+body, html {
+  height: 100%;
+  margin: 0;
+  border-radius:12px
+  padding: 0;
+  background: var(--bg-main-light);
+  color: var(--primary);
+  font-family: 'Segoe UI', 'Arial', sans-serif;
+  transition: background 0.3s, color 0.3s;
+}
+body.dark-mode, html.dark-mode {
+  background: var(--bg-main-dark);
+  border-radius:12px;
+  color: var(--primary-dark);
+}
+#chatbot-container {
+  background: var(--bg-chat-light);
+  box-shadow: 0 4px 32px rgba(0,0,0,0.12);
+  border: 1px solid var(--border-light);
+  display: flex;
+  flex-direction: column;
+  border-radius:12px;
+  height: 100%;
+  transition: background 0.3s, border 0.3s;
+}
+.dark-mode #chatbot-container {
+  background: var(--bg-chat-dark);
+  border: 1px solid var(--border-dark);
+}
+#messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 16px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: transparent;
+}
+.message {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.message.user {
+  align-items: flex-end;
+}
+.bubble {
+  max-width: 80%;
+  padding: 12px 18px;
+  border-radius: 18px;
+  font-size: 1rem;
+  margin-bottom: 2px;
+  word-break: break-word;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  transition: background 0.3s, color 0.3s;
+}
+.bubble.user {
+  background: var(--user-bubble-light);
+  color: var(--user-msg-light);
+  border-bottom-right-radius: 6px;
+}
+.dark-mode .bubble.user {
+  background: var(--user-bubble-dark);
+  color: var(--user-msg-dark);
+}
+.bubble.bot {
+  background: var(--bot-bubble-light);
+  color: var(--bot-msg-light);
+  border-bottom-left-radius: 6px;
+}
+.dark-mode .bubble.bot {
+  background: var(--bot-bubble-dark);
+  color: var(--bot-msg-dark);
+}
+#chatForm {
+  display: flex;
+  padding: 16px;
+  border-top: 1px solid var(--border-light);
+  background: transparent;
+}
+.dark-mode #chatForm {
+  border-top: 1px solid var(--border-dark);
+}
+#chatInput {
+  flex: 1;
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 1rem;
+  background: var(--bg-main-light);
+  color: var(--primary);
+  outline: none;
+  transition: border 0.2s, background 0.2s, color 0.2s;
+}
+.dark-mode #chatInput {
+  border: 1px solid var(--border-dark);
+  background: var(--bg-main-dark);
+  color: var(--primary-dark);
+}
+#sendBtn {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 22px;
+  margin-left: 10px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+#sendBtn:disabled {
+  background: #aaa;
+  cursor: not-allowed;
+}
+.dark-mode #sendBtn {
+  background: var(--primary-dark);
+  color: #222;
+}
+::-webkit-scrollbar {
+  width: 8px;
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #e0e0e0;
+  border-radius: 8px;
+}
+.dark-mode ::-webkit-scrollbar-thumb {
+  background: #333;
+}
+</style>
 
-<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-600 via-cyan-600 to-emerald-600 dark:from-black dark:via-slate-900 dark:to-gray-900 transition-colors duration-300">
-  <div class="flex flex-col h-[600px] w-full max-w-md mx-auto glass-card shadow-2xl rounded-3xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-black/40 backdrop-blur-xl overflow-hidden">
-    <!-- Header -->
-    <div class="flex items-center justify-between px-6 py-4 bg-gradient-to-r from-purple-500 via-cyan-500 to-emerald-500 dark:from-purple-800 dark:via-cyan-900 dark:to-emerald-900 text-white">
-      <div class="flex items-center gap-2">
-        <span class="w-3 h-3 bg-emerald-400 rounded-full animate-pulse"></span>
-        <span class="font-bold text-lg tracking-wide">AI Chatbot</span>
-      </div>
-      <span class="text-xs opacity-80">Powered by ChatAI</span>
-    </div>
-    <!-- Messages -->
-    <div id="messages" class="flex-1 overflow-y-auto p-4 space-y-3 bg-white/60 dark:bg-black/30 transition-colors duration-300"></div>
-    <!-- Input -->
-    <form id="chatForm" class="flex p-3 border-t border-slate-200 dark:border-slate-700 bg-white/70 dark:bg-black/40">
-      <input id="chatInput" type="text" class="flex-1 border-none rounded-xl px-4 py-2 mr-2 focus:outline-none focus:ring-2 focus:ring-cyan-400 dark:bg-slate-800 dark:text-white bg-white text-gray-900 placeholder-gray-400 dark:placeholder-gray-500 shadow-inner transition-all" placeholder="Type your message..." autocomplete="off" />
-      <button type="submit" class="bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-purple-500 hover:to-cyan-500 text-white px-5 py-2 rounded-xl font-semibold shadow-lg transition-all">Send</button>
-    </form>
-  </div>
+<div id="chatbot-container">
+  <div id="messages"></div>
+  <div id="suggested-questions" style="padding: 0 16px 8px 16px; display: flex; flex-wrap: wrap; gap: 8px;"></div>
+  <form id="chatForm">
+    <input id="chatInput" type="text" placeholder="Type your message..." autocomplete="off" />
+    <button id="sendBtn" type="submit">Send</button>
+  </form>
 </div>
 <script>
-    const userId = {{ user_id }};
-    let chatbotId = null;
-    const messagesDiv = document.getElementById('messages');
-    const chatForm = document.getElementById('chatForm');
-    const chatInput = document.getElementById('chatInput');
-    let waitingForResponse = false;
+const userId = {{ user_id }};
+let chatbotId = null;
+const messagesDiv = document.getElementById('messages');
+const chatForm = document.getElementById('chatForm');
+const chatInput = document.getElementById('chatInput');
+const sendBtn = document.getElementById('sendBtn');
+let waitingForResponse = false;
 
-    function addMessage(content, from) {
-        const msg = document.createElement('div');
-        msg.className = from === 'user'
-            ? 'flex justify-end'
-            : 'flex justify-start';
-        msg.innerHTML = `<span class="inline-block px-4 py-2 rounded-2xl shadow-md max-w-[80%] break-words font-medium ${from === 'user'
-            ? 'bg-gradient-to-r from-cyan-500 to-emerald-500 text-white dark:from-cyan-700 dark:to-emerald-700'
-            : 'bg-white/80 dark:bg-slate-900/70 text-gray-900 dark:text-gray-100 border border-slate-200 dark:border-slate-700'}">${content}</span>`;
-        messagesDiv.appendChild(msg);
-        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+// Listen for mode messages from parent
+window.addEventListener('message', function(e) {
+  if (e.data && e.data.type === 'cbt-mode') {
+    setMode(!!e.data.dark);
+  }
+});
+function setMode(dark) {
+  if (dark) {
+    document.body.classList.add('dark-mode');
+    document.documentElement.classList.add('dark-mode');
+  } else {
+    document.body.classList.remove('dark-mode');
+    document.documentElement.classList.remove('dark-mode');
+  }
+}
+
+function addMessage(content, from) {
+  const msg = document.createElement('div');
+  msg.className = 'message ' + from;
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble ' + from;
+  bubble.innerHTML = content;
+  msg.appendChild(bubble);
+  messagesDiv.appendChild(msg);
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+async function fetchChatbotId() {
+  const res = await fetch('/api/v1/chatbot/?user_id=' + userId);
+  const bots = await res.json();
+  if (Array.isArray(bots) && bots.length > 0) {
+    chatbotId = bots[0].id;
+  } else {
+    chatbotId = null;
+  }
+}
+
+async function fetchSuggestions() {
+  if (!chatbotId) return;
+  try {
+    const res = await fetch(`/api/v1/chatbot/${chatbotId}/suggestions`);
+    if (!res.ok) return;
+    const data = await res.json();
+    const container = document.getElementById('suggested-questions');
+    container.innerHTML = '';
+    if (data.suggestions) {
+      Object.values(data.suggestions).forEach(q => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'suggestion-btn';
+        btn.style = 'background: #e5f9ee; color: #1a7f37; border: none; border-radius: 8px; padding: 6px 12px; font-size: 0.95rem; cursor: pointer; margin-bottom: 4px;';
+        btn.innerText = q;
+        btn.onclick = () => { chatInput.value = q; chatInput.focus(); };
+        container.appendChild(btn);
+      });
     }
+  } catch {}
+}
 
-    async function fetchChatbotId() {
-        // Fetch all chatbots and pick the first one for this user
-        const res = await fetch('/api/v1/chatbot/?user_id=' + userId);
-        const bots = await res.json();
-        if (Array.isArray(bots) && bots.length > 0) {
-            chatbotId = bots[0].id;
-        } else {
-            chatbotId = null;
-        }
+async function init() {
+  await fetchChatbotId();
+  if (!chatbotId) {
+    addMessage('No chatbot found for this user.', 'bot');
+    chatInput.disabled = true;
+    sendBtn.disabled = true;
+    return;
+  }
+  await fetchSuggestions();
+}
+
+chatForm.onsubmit = async function(e) {
+  e.preventDefault();
+  if (waitingForResponse) return;
+  const prompt = chatInput.value.trim();
+  if (!prompt || !chatbotId) return;
+  addMessage(prompt, 'user');
+  chatInput.value = '';
+  chatInput.disabled = true;
+  sendBtn.disabled = true;
+  waitingForResponse = true;
+  addMessage('...', 'bot');
+  try {
+    const res = await fetch('/api/v1/chatbot/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt, user_id: userId, chatbot_id: chatbotId })
+    });
+    const data = await res.json();
+    // Remove the loading indicator
+    const lastMsg = messagesDiv.lastChild;
+    if (lastMsg && lastMsg.textContent === '...') {
+      messagesDiv.removeChild(lastMsg);
     }
-
-    async function init() {
-        await fetchChatbotId();
-        if (!chatbotId) {
-            addMessage('No chatbot found for this user.', 'bot');
-            chatInput.disabled = true;
-            return;
-        }
+    addMessage(data.response || JSON.stringify(data), 'bot');
+  } catch (err) {
+    const lastMsg = messagesDiv.lastChild;
+    if (lastMsg && lastMsg.textContent === '...') {
+      messagesDiv.removeChild(lastMsg);
     }
+    addMessage('Error: Could not get response from bot.', 'bot');
+  }
+  chatInput.disabled = false;
+  sendBtn.disabled = false;
+  chatInput.focus();
+  waitingForResponse = false;
+};
 
-    chatForm.onsubmit = async function(e) {
-        e.preventDefault();
-        if (waitingForResponse) return; // Prevent multiple sends
-        const prompt = chatInput.value.trim();
-        if (!prompt || !chatbotId) return;
-        addMessage(prompt, 'user');
-        chatInput.value = '';
-        chatInput.disabled = true;
-        waitingForResponse = true;
-        addMessage('<span class="animate-pulse">...</span>', 'bot'); // Show loading indicator
-
-        try {
-            const res = await fetch('/api/v1/chatbot/chat', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ prompt, user_id: userId, chatbot_id: chatbotId })
-            });
-            const data = await res.json();
-            // Remove the loading indicator
-            const lastMsg = messagesDiv.lastChild;
-            if (lastMsg && lastMsg.textContent === '...') {
-                messagesDiv.removeChild(lastMsg);
-            }
-            addMessage(data.response || JSON.stringify(data), 'bot');
-        } catch (err) {
-            // Remove the loading indicator
-            const lastMsg = messagesDiv.lastChild;
-            if (lastMsg && lastMsg.textContent === '...') {
-                messagesDiv.removeChild(lastMsg);
-            }
-            addMessage('Error: Could not get response from bot.', 'bot');
-        }
-        chatInput.disabled = false;
-        chatInput.focus();
-        waitingForResponse = false;
-    };
-
-    init();
+init();
 </script>

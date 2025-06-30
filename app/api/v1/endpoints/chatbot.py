@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, Request, Security
 from sqlalchemy.orm import Session
 from app.core.config import get_db
-from app.models.chatbot import Chatbot
+from app.models.chatbot import Chatbot, ChatbotSuggestion
 from app.models.user import User
-from app.schemas.chatbot import ChatbotCreate, ChatbotRead
+from app.schemas.chatbot import ChatbotCreate, ChatbotRead, ChatbotSuggestionCreate, ChatbotSuggestionOut
 from typing import List
 from app.core import config
 from pydantic import BaseModel
@@ -13,6 +13,7 @@ from fastapi.templating import Jinja2Templates
 import os
 from app.api.v1.endpoints.auth import get_current_user_from_cookie
 from app.services.chatbot_service import ChatbotService
+from app.api.deps import get_db
 
 router = APIRouter()
 
@@ -61,4 +62,19 @@ def admin_required(user: User = Depends(get_current_user_from_cookie)):
 
 @router.delete("/{chatbot_id}")
 def delete_chatbot_by_admin(chatbot_id: int, db: Session = Depends(get_db), admin: User = Depends(admin_required)):
-    return ChatbotService.delete_chatbot(chatbot_id, db) 
+    return ChatbotService.delete_chatbot(chatbot_id, db)
+
+@router.post("/{chatbot_id}/suggestions", response_model=ChatbotSuggestionOut)
+def add_suggestions(chatbot_id: int, suggestion: ChatbotSuggestionCreate, db: Session = Depends(get_db)):
+    db_suggestion = ChatbotSuggestion(chatbot_id=chatbot_id, suggestions=suggestion.suggestions)
+    db.add(db_suggestion)
+    db.commit()
+    db.refresh(db_suggestion)
+    return db_suggestion
+
+@router.get("/{chatbot_id}/suggestions", response_model=ChatbotSuggestionOut)
+def get_suggestions(chatbot_id: int, db: Session = Depends(get_db)):
+    suggestion = db.query(ChatbotSuggestion).filter(ChatbotSuggestion.chatbot_id == chatbot_id).first()
+    if not suggestion:
+        raise HTTPException(status_code=404, detail="Suggestions not found")
+    return suggestion 

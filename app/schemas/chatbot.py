@@ -15,4 +15,16 @@ class ChatbotRead(ChatbotBase):
     id: int
 
     class Config:
+        orm_mode = True
+
+class ChatbotSuggestionBase(BaseModel):
+    suggestions: Dict[str, str]
+
+class ChatbotSuggestionCreate(ChatbotSuggestionBase):
+    chatbot_id: int
+
+class ChatbotSuggestionOut(ChatbotSuggestionBase):
+    id: int
+    chatbot_id: int
+    class Config:
         orm_mode = True 
