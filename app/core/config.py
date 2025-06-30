@@ -37,7 +37,7 @@ IS_TESTING_MODE = os.environ.get("IS_TESTING_MODE", "False").lower() in ("true",
 
 if IS_TESTING_MODE:
     import requests
-    def fastapi_llm_pipe(model, messages, max_new_tokens=100, use_pipeline=False):
+    def fastapi_llm_pipe(model, messages, max_new_tokens=5000, use_pipeline=False):
         url = "https://land-auckland-them-each.trycloudflare.com/chat"
         payload = {
             "messages": messages,
