@@ -17,7 +17,7 @@
     // Add Tailwind CDN if not present
     if (!document.getElementById('tailwind-cdn')) {
         var tw = document.createElement('script');
-        tw.src = `${host}/static/js/tailwind.min.js`;
+        tw.src = `${host}/static/js/tailwind.js`;
         tw.id = 'tailwind-cdn';
         document.head.appendChild(tw);
     }
