@@ -61,19 +61,29 @@ class ChatbotService:
             {"role": "user", "content": user_prompt}
         ]
         try:
-            response = pipe(
-                model=llm_model,
-                messages=messages
-            )
-            if hasattr(response, 'message') and hasattr(response.message, 'content'):
-                content = response.message.content
-            elif isinstance(response, dict) and 'message' in response:
-                content = response['message']['content']
+            if config.IS_TESTING_MODE:
+                response = pipe(
+                    model=llm_model,
+                    messages=messages,
+                    max_new_tokens=100,
+                    use_pipeline=False
+                )
+                # Assume response is already a dict with the answer
+                return response
             else:
-                content = str(response)
-            try:
-                return json.loads(content)
-            except Exception:
-                return {"response": content}
+                response = pipe(
+                    model=llm_model,
+                    messages=messages
+                )
+                if hasattr(response, 'message') and hasattr(response.message, 'content'):
+                    content = response.message.content
+                elif isinstance(response, dict) and 'message' in response:
+                    content = response['message']['content']
+                else:
+                    content = str(response)
+                try:
+                    return json.loads(content)
+                except Exception:
+                    return {"response": content}
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e)) 

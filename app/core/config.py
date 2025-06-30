@@ -33,7 +33,22 @@ def get_db():
 
 PIPE = None
 
-if DEVELOPER_MODEL:
+IS_TESTING_MODE = os.environ.get("IS_TESTING_MODE", "False").lower() in ("true", "1", "yes")
+
+if IS_TESTING_MODE:
+    import requests
+    def fastapi_llm_pipe(model, messages, max_new_tokens=100, use_pipeline=False):
+        url = "https://land-auckland-them-each.trycloudflare.com/chat"
+        payload = {
+            "messages": messages,
+            "max_new_tokens": max_new_tokens,
+            "use_pipeline": use_pipeline
+        }
+        response = requests.post(url, json=payload)
+        response.raise_for_status()
+        return response.json()
+    PIPE = fastapi_llm_pipe
+elif DEVELOPER_MODEL:
     from ollama import chat
     PIPE = chat
     LLM_MODEL = os.environ.get("LLM_MODEL", "llama3.2:1B")
