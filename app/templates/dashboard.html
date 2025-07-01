@@ -1,179 +1,184 @@
 {% extends "skeleton.html" %}
 {%block content%}
-<!-- Hero Welcome Section -->
-<section class="hero-gradient rounded-3xl p-10 shadow-xl mt-20 mb-12 max-w-5xl mx-auto glass-card flex flex-col md:flex-row items-center gap-8 transition-colors duration-300 bg-light-primary text-light-text dark:bg-dark-primary dark:text-dark-text">
-    <div class="flex-1 text-center md:text-left">
-        <h1 class="text-4xl md:text-5xl font-black mb-4 gradient-text">Welcome to Your Dashboard</h1>
-        <div id="userInfo" class="mb-2 text-lg text-light-text dark:text-dark-text"></div>
-        <p class="text-light-text dark:text-dark-text max-w-lg mx-auto md:mx-0">Manage your business, chatbots, and settings all in one place. Everything you need to scale your AI-powered customer experience.</p>
-    </div>
-    <div class="flex-1 flex justify-center">
-        <div class="w-40 h-40 rounded-full bg-gradient-to-br from-purple-500 via-cyan-500 to-emerald-500 neon-glow floating flex items-center justify-center">
-            <svg class="w-24 h-24 text-white/80" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 48 48">
-                <circle cx="24" cy="24" r="20" stroke="currentColor" stroke-width="3" fill="none"/>
-                <path d="M16 32c2-4 8-4 10 0" stroke="currentColor" stroke-width="2"/>
-                <circle cx="18" cy="20" r="2" fill="currentColor"/>
-                <circle cx="30" cy="20" r="2" fill="currentColor"/>
-            </svg>
-        </div>
-    </div>
-</section>
-
-<!-- Stats Cards -->
-<section class="max-w-5xl mx-auto mb-12 text-light-text dark:text-dark-text">
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-        <div class="glass-card shadow-xl dark:shadow-cyan-900 hover:dark:shadow-sm dark:shadow-md rounded-2xl p-6 text-center group hover:scale-105 transition-all perspective-card bg-light-primary text-light-text dark:bg-dark-primary dark:text-dark-text">
-            <div class="text-3xl font-black gradient-text mb-1" id="stat-chatbots">--</div>
-            <div class="text-light-text dark:text-dark-text text-sm">Chatbots</div>
-        </div>
-        <div class="glass-card shadow-xl dark:shadow-cyan-900 hover:dark:shadow-sm dark:shadow-md rounded-2xl p-6 text-center group hover:scale-105 transition-all perspective-card bg-light-primary text-light-text dark:bg-dark-primary dark:text-dark-text">
-            <div class="text-3xl font-black gradient-text mb-1" id="stat-business">--</div>
-            <div class="text-light-text dark:text-dark-text text-sm">Business</div>
-        </div>
-        <div class="glass-card shadow-xl dark:shadow-cyan-900 hover:dark:shadow-sm dark:shadow-md rounded-2xl p-6 text-center group hover:scale-105 transition-all perspective-card bg-light-primary text-light-text dark:bg-dark-primary dark:text-dark-text">
-            <div class="text-3xl font-black gradient-text mb-1">∞</div>
-            <div class="text-light-text dark:text-dark-text text-sm">Unlimited Users</div>
-        </div>
-        <div class="glass-card shadow-xl dark:shadow-cyan-900 hover:dark:shadow-sm dark:shadow-md rounded-2xl p-6 text-center group hover:scale-105 transition-all perspective-card bg-light-primary text-light-text dark:bg-dark-primary dark:text-dark-text">
-            <div class="text-3xl font-black gradient-text mb-1">24/7</div>
-            <div class="text-light-text dark:text-dark-text text-sm">Support</div>
-        </div>
-    </div>
-</section>
-<!-- Business Document Upload & List Section -->
-<div class="max-w-5xl mx-auto mb-12 text-light-text dark:text-dark-text glass-card shadow-xl dark:shadow-cyan-900 rounded-3xl p-8 mt-8 transition-colors duration-300 bg-light-primary text-light-text dark:bg-dark-primary dark:text-dark-text">
-    <h2 class="font-bold text-2xl mb-4 gradient-text">Business Documents</h2>
-    <form id="documentUploadForm" class="space-y-3" enctype="multipart/form-data">
-        <div class="flex flex-col md:flex-row gap-4">
-            <div class="flex-1">
-                <label class="block font-semibold mb-1">Type</label>
-                <select id="docType" class="text-black bg-white w-full border rounded px-3 py-2 dark:bg-dark-primary dark:text-dark-text" required>
-                    <option class="dark:text-dark-text dark:bg-dark-primary text-black bg-white" value="faq">FAQ</option>
-                    <option class="dark:text-dark-text dark:bg-dark-primary text-black bg-white" value="product_list">Product List</option>
-                    <option class="dark:text-dark-text dark:bg-dark-primary text-black bg-white" value="policy">Policy</option>
-                    <option class="dark:text-dark-text dark:bg-dark-primary text-black bg-white" value="about">About</option>
-                    <option class="dark:text-dark-text dark:bg-dark-primary text-black bg-white" value="help_center">Help Center</option>
-                    <option class="dark:text-dark-text dark:bg-dark-primary text-black bg-white" value="team">Team</option>
-                    <option class="dark:text-dark-text dark:bg-dark-primary text-black bg-white" value="other">Other</option>
-                </select>
+<!-- Sidebar + Main Layout -->
+<div class="flex flex-col md:flex-row max-w-7xl mx-auto mt-20 mb-12 gap-8">
+    <!-- Sidebar Navigation -->
+    <aside class="w-full md:w-64 flex-shrink-0 mb-6 md:mb-0">
+        <div class="glass-card rounded-3xl p-6 shadow-xl flex flex-col gap-6 sticky top-24">
+            <div class="flex flex-col items-center gap-2 mb-6">
+                <div class="w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 via-cyan-500 to-emerald-500 neon-glow flex items-center justify-center">
+                    <svg class="w-12 h-12 text-white/80" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 48 48">
+                        <circle cx="24" cy="24" r="20" stroke="currentColor" stroke-width="3" fill="none"/>
+                        <path d="M16 32c2-4 8-4 10 0" stroke="currentColor" stroke-width="2"/>
+                        <circle cx="18" cy="20" r="2" fill="currentColor"/>
+                        <circle cx="30" cy="20" r="2" fill="currentColor"/>
+                    </svg>
+                </div>
+                <div id="userInfo" class="font-bold text-lg gradient-text"></div>
             </div>
-            <div class="flex-1">
-                <label class="block font-semibold mb-1">Upload File</label>
-                <input type="file" id="docFile" class="w-full border rounded px-3 py-2" />
-            </div>
-            <div class="flex-1">
-                <label class="block font-semibold mb-1">Or Paste Link <span class="text-xs text-yellow-600 dark:text-yellow-400">(coming soon)</span></label>
-                <input type="url" id="docUrl" class="w-full border rounded px-3 py-2 text-black bg-white dark:text-dark-text dark:bg-dark-primary opacity-50 cursor-not-allowed" placeholder="https://..." disabled />
-                <div class="text-xs text-gray-500 mt-1">Link scraping is not yet supported. Please upload a file.</div>
-            </div>
+            <nav class="flex flex-col gap-2">
+                <button class="sidebar-tab-btn px-4 py-2 rounded-lg font-semibold text-left hover:bg-gradient-to-r from-purple-100 to-cyan-100 dark:hover:from-purple-900 dark:hover:to-cyan-900 transition" data-tab="stats">📊 Stats</button>
+                <button class="sidebar-tab-btn px-4 py-2 rounded-lg font-semibold text-left hover:bg-gradient-to-r from-purple-100 to-cyan-100 dark:hover:from-purple-900 dark:hover:to-cyan-900 transition" data-tab="documents">📁 Documents</button>
+                <button class="sidebar-tab-btn px-4 py-2 rounded-lg font-semibold text-left hover:bg-gradient-to-r from-purple-100 to-cyan-100 dark:hover:from-purple-900 dark:hover:to-cyan-900 transition" data-tab="settings">⚙️ Business Settings</button>
+                <button class="sidebar-tab-btn px-4 py-2 rounded-lg font-semibold text-left hover:bg-gradient-to-r from-purple-100 to-cyan-100 dark:hover:from-purple-900 dark:hover:to-cyan-900 transition" data-tab="chatbots">🤖 Chatbots</button>
+            </nav>
         </div>
-        <button type="submit" class="bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-4 py-2 rounded font-semibold hover:scale-105 transition-all">Upload Document</button>
-        <div id="docUploadMsg" class="text-green-600 dark:text-green-400 mt-2 hidden"></div>
-    </form>
-    <div class="mt-6">
-        <h3 class="font-bold text-lg mb-2">Uploaded Documents</h3>
-        <ul id="documentList" class="space-y-2"></ul>
-    </div>
-</div>
-<!-- Main Content: Business Settings & Chatbots -->
-<section class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 mb-20 text-light-text  dark:text-dark-text">
-    <!-- Business Settings -->
-    <div class="glass-card shadow-xl dark:shadow-cyan-900 hover:dark:shadow-sm dark:shadow-md rounded-3xl p-8 shadow-lg S  transition-colors duration-300 bg-light-primary text-light-text dark:bg-dark-primary dark:text-dark-text">
-        <h2 class="font-bold text-2xl mb-4 gradient-text">Business Settings</h2>
-        <form id="settingsForm" class="space-y-3 ">
-            <input type="text" id="businessName" class="w-full border dark:border-white/10 border-black/10  rounded px-3 py-2 bg-light-primary text-light-text dark:bg-dark-primary dark:text-dark-text border-light-primary dark:border-dark-primary" placeholder="Business Name" required />
-            <textarea id="businessSettings" class="w-full border border-black/10 dark:border-white/10 rounded px-3 py-2 bg-light-primary text-light-text dark:bg-dark-primary dark:text-dark-text border-light-primary dark:border-dark-primary" placeholder="Settings (JSON)"></textarea>
-            <div class="text-xs text-gray-500 mt-1">Example settings (JSON):</div>
-            <pre id="businessSettingsSample" class="bg-slate-100 dark:bg-slate-800 rounded p-2 text-xs font-mono mt-1 overflow-x-auto">{
+    </aside>
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col gap-8">
+        <!-- Stats Section -->
+        <section id="tab-stats" class="tab-section">
+            <div class="glass-card shadow-xl rounded-3xl p-8 mb-8">
+                <h2 class="font-bold text-2xl mb-4 gradient-text flex items-center gap-2">📊 Dashboard Analytics</h2>
+                <!-- Chatbot Usage Table -->
+                <div class="overflow-x-auto mb-8">
+                    <h3 class="font-semibold text-lg mb-2">Recent Chatbot Messages</h3>
+                    <table class="min-w-full text-xs md:text-sm border rounded-lg overflow-hidden">
+                        <thead class="bg-gradient-to-r from-purple-100 to-cyan-100 dark:from-purple-900 dark:to-cyan-900">
+                            <tr>
+                                <th class="px-3 py-2 text-left">Timestamp</th>
+                                <th class="px-3 py-2 text-left">User</th>
+                                <th class="px-3 py-2 text-left">Chatbot</th>
+                                <th class="px-3 py-2 text-left">Message</th>
+                                <th class="px-3 py-2 text-left">Type</th>
+                            </tr>
+                        </thead>
+                        <tbody id="chatbotMessagesTable">
+                            <!-- JS will populate rows here -->
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Charts Row 1 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                    <div>
+                        <h3 class="font-semibold mb-2">Chatbot Usage Over Time</h3>
+                        <canvas id="usageChart" height="180"></canvas>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold mb-2">Business Documents Added</h3>
+                        <canvas id="docsChart" height="180"></canvas>
+                    </div>
+                </div>
+                <!-- Charts Row 2 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                    <div>
+                        <h3 class="font-semibold mb-2">Suggestions Added</h3>
+                        <canvas id="suggestionsChart" height="180"></canvas>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold mb-2">Document Types Distribution</h3>
+                        <canvas id="docTypesChart" height="180"></canvas>
+                    </div>
+                </div>
+                <!-- Charts Row 3 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="font-semibold mb-2">Chatbot Popularity</h3>
+                        <canvas id="popularityChart" height="180"></canvas>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold mb-2">Top 5 Most Used Suggestions</h3>
+                        <canvas id="topSuggestionsChart" height="180"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Business Documents Section -->
+        <section id="tab-documents" class="tab-section hidden">
+            <div class="glass-card shadow-xl rounded-3xl p-8">
+                <h2 class="font-bold text-2xl mb-4 gradient-text flex items-center gap-2">📁 Business Documents</h2>
+                <form id="documentUploadForm" class="space-y-3" enctype="multipart/form-data">
+                    <div class="flex flex-col md:flex-row gap-4">
+                        <div class="flex-1">
+                            <label class="block font-semibold mb-1">Type</label>
+                            <select id="docType" class="text-black bg-white w-full border rounded px-3 py-2 dark:bg-dark-primary dark:text-dark-text" required>
+                                <option value="faq">FAQ</option>
+                                <option value="product_list">Product List</option>
+                                <option value="policy">Policy</option>
+                                <option value="about">About</option>
+                                <option value="help_center">Help Center</option>
+                                <option value="team">Team</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="flex-1">
+                            <label class="block font-semibold mb-1">Upload File</label>
+                            <input type="file" id="docFile" class="w-full border rounded px-3 py-2" />
+                        </div>
+                        <div class="flex-1">
+                            <label class="block font-semibold mb-1">Or Paste Link <span class="text-xs text-yellow-600 dark:text-yellow-400">(coming soon)</span></label>
+                            <input type="url" id="docUrl" class="w-full border rounded px-3 py-2 text-black bg-white dark:text-dark-text dark:bg-dark-primary opacity-50 cursor-not-allowed" placeholder="https://..." disabled />
+                            <div class="text-xs text-gray-500 mt-1">Link scraping is not yet supported. Please upload a file.</div>
+                        </div>
+                    </div>
+                    <button type="submit" class="bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-4 py-2 rounded font-semibold hover:scale-105 transition-all">Upload Document</button>
+                    <div id="docUploadMsg" class="text-green-600 dark:text-green-400 mt-2 hidden"></div>
+                </form>
+                <div class="mt-6">
+                    <h3 class="font-bold text-lg mb-2">Uploaded Documents</h3>
+                    <ul id="documentList" class="space-y-2"></ul>
+                </div>
+            </div>
+        </section>
+        <!-- Business Settings Section -->
+        <section id="tab-settings" class="tab-section hidden">
+            <div class="glass-card shadow-xl rounded-3xl p-8">
+                <h2 class="font-bold text-2xl mb-4 gradient-text flex items-center gap-2">⚙️ Business Settings</h2>
+                <form id="settingsForm" class="space-y-3 ">
+                    <input type="text" id="businessName" class="w-full border dark:border-white/10 border-black/10  rounded px-3 py-2 bg-light-primary text-light-text dark:bg-dark-primary dark:text-dark-text border-light-primary dark:border-dark-primary" placeholder="Business Name" required />
+                    <textarea id="businessSettings" class="w-full border border-black/10 dark:border-white/10 rounded px-3 py-2 bg-light-primary text-light-text dark:bg-dark-primary dark:text-dark-text border-light-primary dark:border-dark-primary" placeholder="Settings (JSON)"></textarea>
+                    <div class="text-xs text-gray-500 mt-1">Example settings (JSON):</div>
+                    <pre id="businessSettingsSample" class="bg-slate-100 dark:bg-slate-800 rounded p-2 text-xs font-mono mt-1 overflow-x-auto">{
   "industry": "E-commerce",
   "support_hours": "24/7",
   "contact_email": "support@example.com",
   "features": ["live chat", "order tracking", "FAQ"]
 }</pre> 
-            <button type="button" id="useBusinessSample" class="mt-1 px-2 py-1 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded text-xs">
-                <svg version="1.1" id="_x34_" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
-                viewBox="0 0 512 512"  xml:space="preserve" class="inline w-4 h-4 mr-1 align-text-bottom">
-           <g>
-               <g>
-                   <g>
-                       <path style="fill:#727171;" d="M433.194,510.838H2.734c0,0,0.41-4.648,1.025-11.824c0.752-9.569,1.982-23.717,3.144-37.318
-                           c0.957-11.278,1.982-22.213,2.666-29.868c2.255-23.717,18.112-41.488,40.736-49.348c11.483-4.033,41.488-15.105,68.28-25.084
-                           c9.159-3.349,17.976-6.63,25.562-9.432c1.367-0.547,2.734-1.025,4.033-1.504c5.878-2.187,10.799-4.033,14.285-5.331
-                           c1.299-0.478,2.461-0.888,3.281-1.23c1.572-0.547,2.392-0.889,2.392-0.889l17.36,0.478l32.466,0.957l32.466-0.957l17.361-0.478
-                           c0,0,0.82,0.342,2.392,0.889c0.82,0.342,1.982,0.752,3.281,1.23c3.691,1.367,9.159,3.417,15.652,5.81
-                           c0.889,0.342,1.777,0.684,2.666,1.025c10.594,3.964,23.649,8.749,36.772,13.601c23.512,8.749,47.161,17.429,57.071,20.915
-                           c22.692,7.86,38.549,25.631,40.804,49.348C428.683,455.544,433.194,510.838,433.194,510.838z"/>
-                       <polygon style="fill:#838384;" points="216.46,370.45 216.46,510.018 148.18,510.018 148.18,451.99 89.332,463.404 
-                           110.178,360.949 118.585,357.395 143.942,346.733 146.266,345.776 148.18,346.46 162.465,351.449 			"/>
-                       <polygon style="fill:#838384;" points="292.375,345.76 328.432,360.945 349.303,463.414 290.486,452.021 290.486,510.023 
-                           222.158,510.023 222.158,370.436 			"/>
-                   </g>
-                   <rect x="162.465" y="225.277" style="fill:#8BB6BA;" width="110.998" height="153.716"/>
-                   <rect x="192.682" y="372.325" style="fill:#E67386;" width="50.607" height="35.429"/>
-                   <rect x="192.682" y="403.963" style="fill:#B31E24;" width="50.607" height="11.374"/>
-                   <g>
-                       <polygon style="fill:#F1F2F1;" points="217.964,370.45 216.46,371.885 216.05,372.295 209.147,378.993 192.675,394.919 
-                           158.501,428 144.147,347.963 143.942,346.733 143.327,343.247 158.501,335.66 162.465,337.984 165.746,339.898 			"/>
-                       <polygon style="fill:#F1F2F1;" points="217.979,370.436 277.444,335.641 292.615,343.23 277.444,427.992 			"/>
-                   </g>
-                   <rect x="192.682" y="411.065" style="fill:#E67386;" width="50.607" height="99.753"/>
-               </g>
-               <g>
-                   <path style="fill:#9EC3C9;" d="M389.246,171.35c0,75.184-48.391,139.021-115.783,162.055c-7.45,2.597-15.105,4.648-23.034,6.083
-                       c-10.526,2.119-21.393,3.144-32.466,3.144c-11.073,0-21.94-1.025-32.466-3.144c-7.928-1.435-15.583-3.486-23.033-6.083
-                       C96.999,311.03,49.602,250.114,46.938,177.733c-0.016,0.039-0.034,0.071-0.051,0.11c0.011-0.191,0.021-0.405,0.031-0.602
-                       c-0.067-1.968-0.236-3.908-0.236-5.892c0-2.802,0.068-5.536,0.205-8.27c0.068-0.137,0.068-0.205,0.137-0.205
-                       C99.174,38.822,221.86,128.837,285.629,29.937c22.35,69.784,73.065,68.485,99.926,106.692c0.137,0.137,0.205,0.205,0.273,0.342
-                       C388.084,148.112,389.246,159.594,389.246,171.35z"/>
-                   <path style="fill:#796A56;" d="M387.537,148.248c-27.203-39.095-75.73-34.448-98.422-105.462
-                       C224.32,143.191,99.789,51.74,46.887,177.843c0.342-6.083,0.615-14.968,0.137-14.968c-0.068,0-0.068,0.068-0.137,0.205
-                       c1.025-20.71,5.673-40.463,13.396-58.575c17.292-40.941,50.1-73.68,91.041-90.972C171.76,4.784,194.315,0,217.964,0
-                       c41.009,0,78.601,14.353,108.059,38.412c9.022,7.313,17.224,15.515,24.469,24.469c17.361,21.12,29.663,46.34,35.336,74.09
-                       c-0.068-0.137-0.137-0.205-0.273-0.342C386.375,140.456,386.99,144.284,387.537,148.248z"/>
-               </g>
-               <polygon style="fill:#796A56;" points="242.996,207.901 223.412,207.901 212.539,207.901 192.963,207.901 188.611,246.994 
-                   210.364,246.994 225.595,246.994 247.348,246.994 	"/>
-               <polygon style="fill:#E67386;" points="76.687,465.933 73.475,510.838 73.407,512 0,512 1.367,496.621 4.374,461.559 
-                   6.903,461.695 	"/>
-           </g>
-           </svg>              Use this sample
-            </button>
-            <div class="flex mt-6">    
-                <button type="submit" class="bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-4 py-2 rounded hover:scale-105 transition-all font-semibold">Update Settings</button>
+                    <button type="button" id="useBusinessSample" class="mt-1 px-2 py-1 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded text-xs flex items-center gap-1">
+                        <svg version="1.1" id="_x34_" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512"  xml:space="preserve" class="inline w-4 h-4 mr-1 align-text-bottom"><g><g><g><path style="fill:#727171;" d="M433.194,510.838H2.734c0,0,0.41-4.648,1.025-11.824c0.752-9.569,1.982-23.717,3.144-37.318c0.957-11.278,1.982-22.213,2.666-29.868c2.255-23.717,18.112-41.488,40.736-49.348c11.483-4.033,41.488-15.105,68.28-25.084c9.159-3.349,17.976-6.63,25.562-9.432c1.367-0.547,2.734-1.025,4.033-1.504c5.878-2.187,10.799-4.033,14.285-5.331c1.299-0.478,2.461-0.888,3.281-1.23c1.572-0.547,2.392-0.889,2.392-0.889l17.36,0.478l32.466,0.957l32.466-0.957l17.361-0.478c0,0,0.82,0.342,2.392,0.889c0.82,0.342,1.982,0.752,3.281,1.23c3.691,1.367,9.159,3.417,15.652,5.81c0.889,0.342,1.777,0.684,2.666,1.025c10.594,3.964,23.649,8.749,36.772,13.601c23.512,8.749,47.161,17.429,57.071,20.915c22.692,7.86,38.549,25.631,40.804,49.348C428.683,455.544,433.194,510.838,433.194,510.838z"/><polygon style="fill:#838384;" points="216.46,370.45 216.46,510.018 148.18,510.018 148.18,451.99 89.332,463.404 110.178,360.949 118.585,357.395 143.942,346.733 146.266,345.776 148.18,346.46 162.465,351.449 "/><polygon style="fill:#838384;" points="292.375,345.76 328.432,360.945 349.303,463.414 290.486,452.021 290.486,510.023 222.158,510.023 222.158,370.436 "/><rect x="162.465" y="225.277" style="fill:#8BB6BA;" width="110.998" height="153.716"/><rect x="192.682" y="372.325" style="fill:#E67386;" width="50.607" height="35.429"/><rect x="192.682" y="403.963" style="fill:#B31E24;" width="50.607" height="11.374"/><polygon style="fill:#F1F2F1;" points="217.964,370.45 216.46,371.885 216.05,372.295 209.147,378.993 192.675,394.919 158.501,428 144.147,347.963 143.942,346.733 143.327,343.247 158.501,335.66 162.465,337.984 165.746,339.898 "/><polygon style="fill:#F1F2F1;" points="217.979,370.436 277.444,335.641 292.615,343.23 277.444,427.992 "/><rect x="192.682" y="411.065" style="fill:#E67386;" width="50.607" height="99.753"/></g><g><path style="fill:#9EC3C9;" d="M389.246,171.35c0,75.184-48.391,139.021-115.783,162.055c-7.45,2.597-15.105,4.648-23.034,6.083c-10.526,2.119-21.393,3.144-32.466,3.144c-11.073,0-21.94-1.025-32.466-3.144c-7.928-1.435-15.583-3.486-23.033-6.083C96.999,311.03,49.602,250.114,46.938,177.733c-0.016,0.039-0.034,0.071-0.051,0.11c0.011-0.191,0.021-0.405,0.031-0.602c-0.067-1.968-0.236-3.908-0.236-5.892c0-2.802,0.068-5.536,0.205-8.27c0.068-0.137,0.068-0.205,0.137-0.205C99.174,38.822,221.86,128.837,285.629,29.937c22.35,69.784,73.065,68.485,99.926,106.692c0.137,0.137,0.205,0.205,0.273,0.342C388.084,148.112,389.246,159.594,389.246,171.35z"/><path style="fill:#796A56;" d="M387.537,148.248c-27.203-39.095-75.73-34.448-98.422-105.462C224.32,143.191,99.789,51.74,46.887,177.843c0.342-6.083,0.615-14.968,0.137-14.968c-0.068,0-0.068,0.068-0.137,0.205c1.025-20.71,5.673-40.463,13.396-58.575c17.292-40.941,50.1-73.68,91.041-90.972C171.76,4.784,194.315,0,217.964,0c41.009,0,78.601,14.353,108.059,38.412c9.022,7.313,17.224,15.515,24.469,24.469c17.361,21.12,29.663,46.34,35.336,74.09c-0.068-0.137-0.137-0.205-0.273-0.342C386.375,140.456,386.99,144.284,387.537,148.248z"/></g><polygon style="fill:#796A56;" points="242.996,207.901 223.412,207.901 212.539,207.901 192.963,207.901 188.611,246.994 210.364,246.994 225.595,246.994 247.348,246.994 "/><polygon style="fill:#E67386;" points="76.687,465.933 73.475,510.838 73.407,512 0,512 1.367,496.621 4.374,461.559 6.903,461.695 "/></g></svg>
+                        Use this sample
+                    </button>
+                    <div class="flex mt-6">    
+                        <button type="submit" class="bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-4 py-2 rounded hover:scale-105 transition-all font-semibold">Update Settings</button>
+                    </div>
+                </form>
+                <div id="settingsMsg" class="text-green-600 dark:text-green-400 mt-2 hidden">Settings updated!</div>
             </div>
-        </form>
-        <div id="settingsMsg" class="text-green-600 dark:text-green-400 mt-2 hidden">Settings updated!</div>
-    </div>
-    <!-- Chatbots List -->
-    <div class="glass-card shadow-xl dark:shadow-cyan-900 hover:dark:shadow-sm dark:shadow-md rounded-3xl p-8 shadow-lg border border-green-100 dark:border-dark-primary transition-colors duration-300 flex flex-col bg-light-primary text-light-text dark:bg-dark-primary dark:text-dark-text">
-        <div class="flex items-center justify-between mb-4">
-            <h2 class="font-bold text-2xl gradient-text">Your Chatbots</h2>
-            <button onclick="document.getElementById('chatbotForm').classList.toggle('hidden')" class="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-2 rounded-full font-bold shadow hover:scale-105 transition-all">+ New</button>
-        </div>
-        <ul id="chatbotList" class="mb-4 space-y-3"></ul>
-        <form id="chatbotForm" class="space-y-2 hidden">
-            <input type="text" id="chatbotName" class="w-full border border-black/10 dark:border-white/10 rounded px-3 py-2 bg-light-primary text-light-text dark:bg-dark-primary dark:text-dark-text border-light-primary dark:border-dark-primary" placeholder="Chatbot Name" required />
-            <textarea id="chatbotPrompt" class="w-full border border-black/10 dark:border-white/10 border rounded px-3 py-2 bg-light-primary text-light-text dark:bg-dark-primary dark:text-dark-text border-light-primary dark:border-dark-primary" placeholder="Prompt"></textarea>
-            <div class="text-xs text-gray-500 mt-1">Example prompt:</div>
-            <pre id="chatbotPromptSample" class="bg-slate-100 dark:bg-slate-800 rounded p-2 text-xs font-mono mt-1 overflow-x-auto">You are a helpful assistant for an e-commerce store. Answer customer questions about orders, shipping, and products.</pre>
-            <button type="button" id="usePromptSample" class="mt-1 px-2 py-1 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded text-xs">Use this sample</button>
-            <div class="mt-4">
-              <label class="block font-semibold mb-1">Suggested Questions (one per line):</label>
-              <textarea id="chatbotSuggestions" class="w-full border border-black/10 dark:border-white/10 border rounded px-3 py-2 bg-light-primary text-light-text dark:bg-dark-primary dark:text-dark-text border-light-primary dark:border-dark-primary" placeholder="e.g. What are your hours?\nHow do I track my order?"></textarea>
-              <div class="text-xs text-gray-500 mt-1">These will be shown to users as quick suggestions.</div>
+        </section>
+        <!-- Chatbots Section -->
+        <section id="tab-chatbots" class="tab-section hidden w-full">
+            <div class="glass-card shadow-xl rounded-3xl p-4 md:p-8 flex flex-col max-w-5xl mx-auto">
+                <div class="flex flex-col md:flex-row items-center justify-between mb-4 gap-4">
+                    <h2 class="font-bold text-2xl gradient-text flex items-center gap-2">🤖 Your Chatbots</h2>
+                    <button onclick="document.getElementById('chatbotForm').classList.toggle('hidden')" class="w-full md:w-auto bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-2 rounded-full font-bold shadow hover:scale-105 transition-all">+ New</button>
+                </div>
+                <div class="overflow-x-auto mb-4">
+                  <ul id="chatbotList" class="space-y-3 min-w-[320px] w-full"></ul>
+                </div>
+                <form id="chatbotForm" class="space-y-2 hidden w-full">
+                    <input type="text" id="chatbotName" class="w-full border border-black/10 dark:border-white/10 rounded px-3 py-2 bg-light-primary text-light-text dark:bg-dark-primary dark:text-dark-text border-light-primary dark:border-dark-primary" placeholder="Chatbot Name" required />
+                    <textarea id="chatbotPrompt" class="w-full border border-black/10 dark:border-white/10 border rounded px-3 py-2 bg-light-primary text-light-text dark:bg-dark-primary dark:text-dark-text border-light-primary dark:border-dark-primary" placeholder="Prompt"></textarea>
+                    <div class="text-xs text-gray-500 mt-1">Example prompt:</div>
+                    <pre id="chatbotPromptSample" class="bg-slate-100 dark:bg-slate-800 rounded p-2 text-xs font-mono mt-1 overflow-x-auto">You are a helpful assistant for an e-commerce store. Answer customer questions about orders, shipping, and products.</pre>
+                    <button type="button" id="usePromptSample" class="mt-1 px-2 py-1 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded text-xs">Use this sample</button>
+                    <div class="mt-4">
+                      <label class="block font-semibold mb-1">Suggested Questions (one per line):</label>
+                      <textarea id="chatbotSuggestions" class="w-full border border-black/10 dark:border-white/10 border rounded px-3 py-2 bg-light-primary text-light-text dark:bg-dark-primary dark:text-dark-text border-light-primary dark:border-dark-primary" placeholder="e.g. What are your hours?\nHow do I track my order?"></textarea>
+                      <div class="text-xs text-gray-500 mt-1">These will be shown to users as quick suggestions.</div>
+                    </div>
+                    <div class="flex flex-col md:flex-row gap-2">
+                        <button type="submit" class="w-full md:w-auto bg-gradient-to-r from-green-600 to-emerald-600 text-white px-4 py-2 rounded font-semibold hover:scale-105 transition-all">Create</button>
+                        <button type="button" onclick="document.getElementById('chatbotForm').classList.add('hidden')" class="w-full md:w-auto px-4 py-2 rounded border border-black-900/50  text-light-text dark:text-dark-text dark:bg-red-700 hover:bg-slate-900/50 hover:text-white dark:hover:bg-red-700/40 transition-all">Cancel</button>
+                    </div>
+                </form>
+                <div id="chatbotMsg" class="text-green-600 dark:text-green-400 mt-2 hidden">Chatbot created!</div>
             </div>
-            <div class="flex gap-2">
-                <button type="submit" class="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-4 py-2 rounded font-semibold hover:scale-105 transition-all">Create</button>
-                <button type="button" onclick="document.getElementById('chatbotForm').classList.add('hidden')" class="px-4 py-2 rounded border border-black-900/50  text-light-text dark:text-dark-text dark:bg-red-700 hover:bg-slate-900/50 hover:text-white dark:hover:bg-red-700/40 transition-all">Cancel</button>
-            </div>
-        </form>
-        <div id="chatbotMsg" class="text-green-600 dark:text-green-400 mt-2 hidden">Chatbot created!</div>
-    </div>
-</section>
-
-
+        </section>
+    </main>
+</div>
 {%endblock%}
 {%block extrajs%}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     const userId = {{ user_id|tojson }};
     let businessProfileId = {{ user.business_profile_id|tojson }};
@@ -186,8 +191,8 @@
         document.getElementById('userInfo').innerHTML = `<span class="font-semibold gradient-text">${user.full_name || user.email}</span>`;
         loadBusinessSettings();
         loadChatbots();
-        // Stats
-        document.getElementById('stat-business').innerText = user.business_profile_id ? '1' : '0';
+        const statBusiness = document.getElementById('stat-business');
+        if (statBusiness) statBusiness.innerText = user.business_profile_id ? '1' : '0';
     }
 
     async function loadBusinessSettings() {
@@ -272,7 +277,8 @@
                 }
             }).catch(()=>{});
         });
-        document.getElementById('stat-chatbots').innerText = bots.length;
+        const statChatbots = document.getElementById('stat-chatbots');
+        if (statChatbots) statChatbots.innerText = bots.length;
 
         // Add event listeners for edit and embed buttons
         document.querySelectorAll('.edit-btn').forEach(btn => {
@@ -504,6 +510,114 @@
             msg.classList.remove('hidden');
         }
     };
+
+    // Tab switching logic
+    document.querySelectorAll('.sidebar-tab-btn').forEach(btn => {
+        btn.onclick = function() {
+            document.querySelectorAll('.tab-section').forEach(sec => sec.classList.add('hidden'));
+            document.getElementById('tab-' + btn.dataset.tab).classList.remove('hidden');
+            document.querySelectorAll('.sidebar-tab-btn').forEach(b => b.classList.remove('bg-gradient-to-r', 'from-purple-200', 'to-cyan-200', 'dark:from-purple-900', 'dark:to-cyan-900'));
+            btn.classList.add('bg-gradient-to-r', 'from-purple-200', 'to-cyan-200', 'dark:from-purple-900', 'dark:to-cyan-900');
+        };
+    });
+    // Set default tab
+    document.querySelector('.sidebar-tab-btn[data-tab="stats"]').click();
+
+    // --- Chart.js and Table Data Logic ---
+    // TODO: Replace mock data with real API calls
+    document.addEventListener('DOMContentLoaded', function() {
+        // 1. Chatbot Messages Table
+        const messages = [
+            { timestamp: '2024-06-01 10:00', user: 'Alice', chatbot: 'SupportBot', message: 'How do I reset my password?', type: 'User' },
+            { timestamp: '2024-06-01 10:01', user: 'SupportBot', chatbot: 'SupportBot', message: 'Click the reset link on login.', type: 'Bot' },
+            { timestamp: '2024-06-01 10:05', user: 'Bob', chatbot: 'OrderBot', message: 'Where is my order?', type: 'User' },
+            { timestamp: '2024-06-01 10:06', user: 'OrderBot', chatbot: 'OrderBot', message: 'Your order is on the way!', type: 'Bot' },
+        ];
+        const table = document.getElementById('chatbotMessagesTable');
+        table.innerHTML = messages.map(m => `<tr><td class='px-3 py-2'>${m.timestamp}</td><td class='px-3 py-2'>${m.user}</td><td class='px-3 py-2'>${m.chatbot}</td><td class='px-3 py-2'>${m.message}</td><td class='px-3 py-2'>${m.type}</td></tr>`).join('');
+
+        // 2. Chatbot Usage Over Time
+        new Chart(document.getElementById('usageChart').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [{
+                    label: 'Messages',
+                    data: [12, 19, 7, 15, 22, 9, 13],
+                    borderColor: '#8B5CF6',
+                    backgroundColor: 'rgba(139,92,246,0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: { responsive: true, plugins: { legend: { display: false } } }
+        });
+        // 3. Business Documents Added
+        new Chart(document.getElementById('docsChart').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [{
+                    label: 'Documents',
+                    data: [2, 3, 1, 4, 2, 0, 1],
+                    backgroundColor: '#06B6D4',
+                }]
+            },
+            options: { responsive: true, plugins: { legend: { display: false } } }
+        });
+        // 4. Suggestions Added
+        new Chart(document.getElementById('suggestionsChart').getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: ['SupportBot', 'OrderBot', 'FAQBot'],
+                datasets: [{
+                    label: 'Suggestions',
+                    data: [10, 7, 5],
+                    backgroundColor: ['#8B5CF6', '#06B6D4', '#10B981'],
+                }]
+            },
+            options: { responsive: true }
+        });
+        // 5. Document Types Distribution
+        new Chart(document.getElementById('docTypesChart').getContext('2d'), {
+            type: 'pie',
+            data: {
+                labels: ['FAQ', 'Product List', 'Policy', 'About', 'Other'],
+                datasets: [{
+                    label: 'Type',
+                    data: [5, 2, 3, 1, 2],
+                    backgroundColor: ['#8B5CF6', '#06B6D4', '#10B981', '#F59E0B', '#F43F5E'],
+                }]
+            },
+            options: { responsive: true }
+        });
+        // 6. Chatbot Popularity
+        new Chart(document.getElementById('popularityChart').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: ['SupportBot', 'OrderBot', 'FAQBot'],
+                datasets: [{
+                    label: 'Messages',
+                    data: [50, 30, 20],
+                    backgroundColor: ['#8B5CF6', '#06B6D4', '#10B981'],
+                }]
+            },
+            options: { responsive: true, plugins: { legend: { display: false } } }
+        });
+        // 7. Top 5 Most Used Suggestions
+        new Chart(document.getElementById('topSuggestionsChart').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: ['How to reset password?', 'Order status', 'Shipping info', 'Return policy', 'Contact support'],
+                datasets: [{
+                    label: 'Uses',
+                    data: [15, 12, 10, 8, 7],
+                    backgroundColor: '#F59E0B',
+                }]
+            },
+            options: { responsive: true, plugins: { legend: { display: false } } }
+        });
+    });
 
     loadUserInfo();
     loadBusinessDocuments();

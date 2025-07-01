@@ -255,11 +255,19 @@
                 padding-right: 1rem;
             }
         }
+        .fade-in {
+          animation: fadeIn 0.5s ease-in;
+      }
+      
+      @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+      }
     </style>
 </head>
 <body class="bg-light-primary text-light-text dark:bg-dark-900 dark:text-dark-text transition-colors duration-300 w-full">   
 {%include "navbar.html"%}
-<div style="min-height: 92vh; place-content:center;" class="bg-light-primary text-light-text dark:bg-dark-700 dark:text-dark-text transition-colors duration-300 w-full">
+<div id="main-content" style="min-height: 92vh; place-content:center;" class="fade-in bg-light-primary text-light-text dark:bg-dark-700 dark:text-dark-text transition-colors duration-300 w-full">
     {%block content%}
     {%endblock%}
 </div>
@@ -286,6 +294,13 @@
     // Also update on page load if theme changes elsewhere
     window.addEventListener('storage', updateIcon);
 })();
+// Fade-in effect for main content
+window.addEventListener('DOMContentLoaded', function() {
+    const mainContent = document.getElementById('main-content');
+    if (mainContent) {
+        setTimeout(() => mainContent.classList.add('fade-in-active'), 100);
+    }
+});
 </script>
 </body>
 </html>

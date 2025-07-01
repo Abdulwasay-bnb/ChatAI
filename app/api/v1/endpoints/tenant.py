@@ -69,8 +69,27 @@ def extract_data_from_file(file_path, filetype):
     if filetype == 'pdf' and PdfReader:
         try:
             reader = PdfReader(file_path)
-            text = " ".join(page.extract_text() or '' for page in reader.pages)
-            return {"text": text[:5000]}  # Limit for preview
+            # Improved: join lines, collapse excessive newlines, and fix single-word lines
+            raw_text = "\n".join(page.extract_text() or '' for page in reader.pages)
+            # Collapse multiple newlines and join single-word lines
+            import re
+            # Remove excessive newlines (more than 2)
+            text = re.sub(r'\n{2,}', '\n\n', raw_text)
+            # Collapse lines that are just a single word (likely broken lines)
+            lines = text.split('\n')
+            merged = []
+            buffer = ''
+            for line in lines:
+                if len(line.strip().split()) <= 2 and buffer:
+                    buffer += ' ' + line.strip()
+                else:
+                    if buffer:
+                        merged.append(buffer.strip())
+                    buffer = line.strip()
+            if buffer:
+                merged.append(buffer.strip())
+            pretty_text = '\n\n'.join(merged)
+            return {"text": pretty_text[:5000]}  # Limit for preview
         except Exception as e:
             return {"error": str(e)}
     elif filetype == 'csv':
