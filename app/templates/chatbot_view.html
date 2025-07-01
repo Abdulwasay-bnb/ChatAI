@@ -41,7 +41,7 @@ body.dark-mode, html.dark-mode {
   display: flex;
   flex-direction: column;
   border-radius:12px;
-  height: 100%;
+  height: 99.5%;
   transition: background 0.3s, border 0.3s;
 }
 .dark-mode #chatbot-container {
@@ -152,8 +152,8 @@ body.dark-mode, html.dark-mode {
 </style>
 
 <div id="chatbot-container">
-  <div id="messages"></div>
-  <div id="suggested-questions" style="padding: 0 16px 8px 16px; display: flex; flex-wrap: wrap; gap: 8px;"></div>
+  <div id="messages">  <div id="suggested-questions" style="padding: 8px 16px 0 16px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-start; background: none;"></div>
+</div>
   <form id="chatForm">
     <input id="chatInput" type="text" placeholder="Type your message..." autocomplete="off" />
     <button id="sendBtn" type="submit">Send</button>
@@ -218,9 +218,11 @@ async function fetchSuggestions() {
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'suggestion-btn';
-        btn.style = 'background: #e5f9ee; color: #1a7f37; border: none; border-radius: 8px; padding: 6px 12px; font-size: 0.95rem; cursor: pointer; margin-bottom: 4px;';
+        btn.style = 'background: linear-gradient(90deg, #e0ffe7 60%, #b2f5ea 100%); color: #1a7f37; border: none; border-radius: 999px; padding: 8px 18px; font-size: 1rem; font-weight: 500; box-shadow: 0 2px 8px rgba(34,197,94,0.08); cursor: pointer; margin-bottom: 4px; transition: background 0.2s, color 0.2s; outline: none;';
         btn.innerText = q;
         btn.onclick = () => { chatInput.value = q; chatInput.focus(); };
+        btn.onmouseover = () => { btn.style.background = 'linear-gradient(90deg, #bbf7d0 60%, #99f6e4 100%)'; };
+        btn.onmouseout = () => { btn.style.background = 'linear-gradient(90deg, #e0ffe7 60%, #b2f5ea 100%)'; };
         container.appendChild(btn);
       });
     }

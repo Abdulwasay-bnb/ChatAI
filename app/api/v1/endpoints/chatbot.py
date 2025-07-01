@@ -66,10 +66,19 @@ def delete_chatbot_by_admin(chatbot_id: int, db: Session = Depends(get_db), admi
 
 @router.post("/{chatbot_id}/suggestions", response_model=ChatbotSuggestionOut)
 def add_suggestions(chatbot_id: int, suggestion: ChatbotSuggestionCreate, db: Session = Depends(get_db)):
-    db_suggestion = ChatbotSuggestion(chatbot_id=chatbot_id, suggestions=suggestion.suggestions)
-    db.add(db_suggestion)
+    db_suggestion = db.query(ChatbotSuggestion).filter(ChatbotSuggestion.chatbot_id == chatbot_id).first()
+    if db_suggestion:
+        db_suggestion.suggestions = suggestion.suggestions
+    else:
+        db_suggestion = ChatbotSuggestion(chatbot_id=chatbot_id, suggestions=suggestion.suggestions)
+        db.add(db_suggestion)
     db.commit()
     db.refresh(db_suggestion)
+    # Delete any duplicate suggestions for this chatbot (keep only the latest)
+    duplicates = db.query(ChatbotSuggestion).filter(ChatbotSuggestion.chatbot_id == chatbot_id, ChatbotSuggestion.id != db_suggestion.id).all()
+    for dup in duplicates:
+        db.delete(dup)
+    db.commit()
     return db_suggestion
 
 @router.get("/{chatbot_id}/suggestions", response_model=ChatbotSuggestionOut)

@@ -4,20 +4,8 @@
             <!-- Logo and Brand -->
             <div class="flex flex-col items-center md:items-start gap-2">
                 <a href="{{ url_for('home') }}" class="flex items-center space-x-2">
-                    <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 via-cyan-500 to-emerald-500 shadow-lg">
-                        <svg class="w-7 h-7" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect width="32" height="32" rx="8" fill="url(#footer-logo-gradient)"/>
-                            <text x="16" y="21" text-anchor="middle" font-size="16" font-weight="bold" fill="white" font-family="'Space Grotesk', sans-serif">AI</text>
-                            <defs>
-                                <linearGradient id="footer-logo-gradient" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
-                                    <stop stop-color="#8B5CF6"/>
-                                    <stop offset="0.5" stop-color="#06B6D4"/>
-                                    <stop offset="1" stop-color="#10B981"/>
-                                </linearGradient>
-                            </defs>
-                        </svg>
-                    </span>
-                    <span class="text-2xl font-black tracking-tight gradient-text">ChatAI</span>
+                    <img src="{{ url_for('static', path='logo.png') }}" class="w-12 h-12 bg-black/10 dark:bg-white/5 rounded-lg">
+                    <span class="text-2xl font-black tracking-tight gradient-text">BnB ChatAI</span>
                 </a>
                 <span class="text-xs opacity-80">Transforming business with AI</span>
             </div>

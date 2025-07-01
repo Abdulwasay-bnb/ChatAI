@@ -4,6 +4,12 @@ from app.schemas.chatbot import ChatbotCreate
 from app.core import config
 from fastapi import HTTPException
 import json
+import chromadb
+from chromadb.config import Settings
+from chromadb.utils import embedding_functions
+import openai
+import tiktoken
+import os
 
 class ChatbotService:
     @staticmethod
@@ -59,10 +65,16 @@ class ChatbotService:
             raise HTTPException(status_code=404, detail="Chatbot not found")
         # System role: define the bot's role and context
         system_message = chatbot.prompt or "You are a helpful AI assistant."
+        # RAG: Retrieve relevant context chunks from Chroma
+        context_chunks = retrieve_relevant_chunks(user_id, user_prompt, top_k=5)
+        context_text = '\n---\n'.join(context_chunks) if context_chunks else ''
+        # Compose messages with context
         messages = [
             {"role": "system", "content": system_message},
-            {"role": "user", "content": user_prompt}
         ]
+        if context_text:
+            messages.append({"role": "system", "content": f"Relevant business info:\n{context_text}"})
+        messages.append({"role": "user", "content": user_prompt})
         try:
             if config.IS_TESTING_MODE:
                 response = pipe(
@@ -89,4 +101,57 @@ class ChatbotService:
                 except Exception:
                     return {"response": content}
         except Exception as e:
-            raise HTTPException(status_code=500, detail=str(e)) 
+            raise HTTPException(status_code=500, detail=str(e))
+
+CHROMA_DIR = 'chroma_db'
+chroma_client = chromadb.Client(Settings(persist_directory=CHROMA_DIR))
+
+# Choose embedding function based on config
+if config.DEVELOPER_MODEL:
+    # Use local embedding (sentence-transformers or similar)
+    embedding_fn = embedding_functions.DefaultEmbeddingFunction()
+else:
+    # Use OpenAI embedding if not in dev mode
+    embedding_fn = embedding_functions.OpenAIEmbeddingFunction(api_key=os.getenv('OPENAI_API_KEY'))
+
+def chunk_text(text, max_tokens=500):
+    # Use tiktoken to count tokens if available, else fallback to words
+    try:
+        enc = tiktoken.encoding_for_model('gpt-3.5-turbo')
+        tokens = enc.encode(text)
+        chunks = []
+        for i in range(0, len(tokens), max_tokens):
+            chunk = enc.decode(tokens[i:i+max_tokens])
+            chunks.append(chunk)
+        return chunks
+    except Exception:
+        # Fallback: split by words
+        words = text.split()
+        return [' '.join(words[i:i+max_tokens]) for i in range(0, len(words), max_tokens)]
+
+def process_and_store_document(doc, user_id):
+    # doc: BusinessDocument instance
+    # user_id: int
+    # Only process if extracted_data has text or rows
+    if doc.extracted_data.get('text'):
+        chunks = chunk_text(doc.extracted_data['text'])
+    elif doc.extracted_data.get('rows'):
+        # Flatten CSV rows to text
+        rows = doc.extracted_data['rows']
+        text = '\n'.join([', '.join(row) for row in rows])
+        chunks = chunk_text(text)
+    else:
+        return
+    # Embed and store in Chroma
+    collection_name = f'user_{user_id}_docs'
+    collection = chroma_client.get_or_create_collection(collection_name, embedding_function=embedding_fn)
+    metadatas = [{"user_id": user_id, "doc_id": doc.id, "chunk_id": i} for i in range(len(chunks))]
+    ids = [f'doc{doc.id}_chunk{i}' for i in range(len(chunks))]
+    collection.add(documents=chunks, metadatas=metadatas, ids=ids)
+
+def retrieve_relevant_chunks(user_id, query, top_k=5):
+    collection_name = f'user_{user_id}_docs'
+    collection = chroma_client.get_or_create_collection(collection_name, embedding_function=embedding_fn)
+    results = collection.query(query_texts=[query], n_results=top_k)
+    # Return the most relevant chunks
+    return [doc for doc in results['documents'][0]] 

@@ -40,7 +40,41 @@
         </div>
     </div>
 </section>
-
+<!-- Business Document Upload & List Section -->
+<div class="max-w-5xl mx-auto mb-12 text-light-text dark:text-dark-text glass-card shadow-xl dark:shadow-cyan-900 rounded-3xl p-8 mt-8 transition-colors duration-300 bg-light-primary text-light-text dark:bg-dark-primary dark:text-dark-text">
+    <h2 class="font-bold text-2xl mb-4 gradient-text">Business Documents</h2>
+    <form id="documentUploadForm" class="space-y-3" enctype="multipart/form-data">
+        <div class="flex flex-col md:flex-row gap-4">
+            <div class="flex-1">
+                <label class="block font-semibold mb-1">Type</label>
+                <select id="docType" class="text-black bg-white w-full border rounded px-3 py-2 dark:bg-dark-primary dark:text-dark-text" required>
+                    <option class="dark:text-dark-text dark:bg-dark-primary text-black bg-white" value="faq">FAQ</option>
+                    <option class="dark:text-dark-text dark:bg-dark-primary text-black bg-white" value="product_list">Product List</option>
+                    <option class="dark:text-dark-text dark:bg-dark-primary text-black bg-white" value="policy">Policy</option>
+                    <option class="dark:text-dark-text dark:bg-dark-primary text-black bg-white" value="about">About</option>
+                    <option class="dark:text-dark-text dark:bg-dark-primary text-black bg-white" value="help_center">Help Center</option>
+                    <option class="dark:text-dark-text dark:bg-dark-primary text-black bg-white" value="team">Team</option>
+                    <option class="dark:text-dark-text dark:bg-dark-primary text-black bg-white" value="other">Other</option>
+                </select>
+            </div>
+            <div class="flex-1">
+                <label class="block font-semibold mb-1">Upload File</label>
+                <input type="file" id="docFile" class="w-full border rounded px-3 py-2" />
+            </div>
+            <div class="flex-1">
+                <label class="block font-semibold mb-1">Or Paste Link <span class="text-xs text-yellow-600 dark:text-yellow-400">(coming soon)</span></label>
+                <input type="url" id="docUrl" class="w-full border rounded px-3 py-2 text-black bg-white dark:text-dark-text dark:bg-dark-primary opacity-50 cursor-not-allowed" placeholder="https://..." disabled />
+                <div class="text-xs text-gray-500 mt-1">Link scraping is not yet supported. Please upload a file.</div>
+            </div>
+        </div>
+        <button type="submit" class="bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-4 py-2 rounded font-semibold hover:scale-105 transition-all">Upload Document</button>
+        <div id="docUploadMsg" class="text-green-600 dark:text-green-400 mt-2 hidden"></div>
+    </form>
+    <div class="mt-6">
+        <h3 class="font-bold text-lg mb-2">Uploaded Documents</h3>
+        <ul id="documentList" class="space-y-2"></ul>
+    </div>
+</div>
 <!-- Main Content: Business Settings & Chatbots -->
 <section class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 mb-20 text-light-text  dark:text-dark-text">
     <!-- Business Settings -->
@@ -136,6 +170,8 @@
         <div id="chatbotMsg" class="text-green-600 dark:text-green-400 mt-2 hidden">Chatbot created!</div>
     </div>
 </section>
+
+
 {%endblock%}
 {%block extrajs%}
 <script>
@@ -362,6 +398,114 @@
         document.getElementById('chatbotPrompt').value = 'You are a helpful assistant for an e-commerce store. Answer customer questions about orders, shipping, and products.';
     };
 
+    async function loadBusinessDocuments() {
+        if (!businessProfileId) return;
+        const res = await fetch(`/api/v1/tenant/business-document/?business_profile_id=${businessProfileId}`);
+        if (!res.ok) return;
+        const docs = await res.json();
+        const list = document.getElementById('documentList');
+        list.innerHTML = '';
+        const docTypeIcons = {
+            faq: '❓',
+            product_list: '📦',
+            policy: '📄',
+            about: '🏢',
+            help_center: '🆘',
+            team: '👥',
+            other: '📁'
+        };
+        docs.forEach(doc => {
+            const icon = docTypeIcons[doc.type] || '📁';
+            const li = document.createElement('li');
+            li.className = 'glass-card p-4 rounded-xl flex flex-col gap-1 border border-slate-200 dark:border-slate-700';
+            li.innerHTML = `
+                <span class="font-bold flex items-center gap-2">${icon} ${doc.type.replace('_', ' ').toUpperCase()}</span>
+                <span class="text-xs text-gray-500">ID: ${doc.id}</span>
+                <span class="text-xs">${doc.filename ? 'File: ' + doc.filename : (doc.url ? 'URL: ' + doc.url : '')}</span>
+                <span class="text-xs text-gray-400">Uploaded: ${new Date(doc.uploaded_at).toLocaleString()}</span>
+                <div class="flex gap-2 mt-2">
+                    <button class="preview-btn px-2 py-1 rounded bg-blue-500 text-white text-xs hover:bg-blue-600 transition" data-id="${doc.id}">Preview</button>
+                    ${doc.storage_path ? `<a href="/api/v1/tenant/business-document/${doc.id}/download" class="px-2 py-1 rounded bg-emerald-500 text-white text-xs hover:bg-emerald-600 transition" download>Download</a>` : ''}
+                    <button class="delete-btn px-2 py-1 rounded bg-red-500 text-white text-xs hover:bg-red-600 transition" data-id="${doc.id}">Delete</button>
+                </div>
+                <div class="preview-content mt-2 hidden text-xs bg-slate-100 dark:bg-slate-800 rounded p-2 font-mono overflow-x-auto"></div>
+            `;
+            list.appendChild(li);
+        });
+        // Add preview and delete event listeners
+        list.querySelectorAll('.preview-btn').forEach(btn => {
+            btn.onclick = async function() {
+                const id = this.getAttribute('data-id');
+                const previewDiv = this.parentElement.parentElement.querySelector('.preview-content');
+                if (!previewDiv.classList.contains('hidden')) {
+                    previewDiv.classList.add('hidden');
+                    return;
+                }
+                const res = await fetch(`/api/v1/tenant/business-document/${id}/preview`);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.text) {
+                        previewDiv.innerText = data.text.slice(0, 500) + (data.text.length > 500 ? '... (truncated)' : '');
+                    } else if (data.rows) {
+                        previewDiv.innerHTML = '<table class="w-full text-xs">' + data.rows.map(row => `<tr>${row.map(cell => `<td class='border px-1'>${cell}</td>`).join('')}</tr>`).join('') + '</table>';
+                    } else if (data.error) {
+                        previewDiv.innerText = 'Error: ' + data.error;
+                    } else {
+                        previewDiv.innerText = 'No preview available.';
+                    }
+                    previewDiv.classList.remove('hidden');
+                } else {
+                    previewDiv.innerText = 'Failed to load preview.';
+                    previewDiv.classList.remove('hidden');
+                }
+            };
+        });
+        list.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.onclick = async function() {
+                if (!confirm('Delete this document?')) return;
+                const id = this.getAttribute('data-id');
+                const res = await fetch(`/api/v1/tenant/business-document/${id}`, { method: 'DELETE' });
+                if (res.ok) {
+                    loadBusinessDocuments();
+                } else {
+                    alert('Failed to delete document.');
+                }
+            };
+        });
+    }
+
+    document.getElementById('documentUploadForm').onsubmit = async function(e) {
+        e.preventDefault();
+        const type = document.getElementById('docType').value;
+        const fileInput = document.getElementById('docFile');
+        const urlInput = document.getElementById('docUrl');
+        const formData = new FormData();
+        formData.append('business_profile_id', businessProfileId);
+        formData.append('type', type);
+        if (fileInput.files.length > 0) {
+            formData.append('file', fileInput.files[0]);
+        }
+        if (urlInput.value) {
+            formData.append('url', urlInput.value);
+        }
+        const res = await fetch('/api/v1/tenant/business-document/', {
+            method: 'POST',
+            body: formData
+        });
+        const msg = document.getElementById('docUploadMsg');
+        if (res.ok) {
+            msg.innerText = 'Document uploaded!';
+            msg.classList.remove('hidden');
+            loadBusinessDocuments();
+            fileInput.value = '';
+            urlInput.value = '';
+        } else {
+            msg.innerText = 'Failed to upload document.';
+            msg.classList.remove('hidden');
+        }
+    };
+
     loadUserInfo();
+    loadBusinessDocuments();
 </script>
 {%endblock%} 

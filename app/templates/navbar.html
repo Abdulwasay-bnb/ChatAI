@@ -3,10 +3,10 @@
         <div class="flex justify-between items-center h-16">
             <!-- Logo -->
             <a href="{{ url_for('home') }}" class="flex items-center space-x-2">
-                <div class="w-8 h-8 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-lg flex items-center justify-center">
-                    <span class="text-white font-bold text-sm">AI</span>
+                <div class="w-12 h-12 bg-white/20 dark:bg-black/20 rounded-lg flex items-center justify-center">
+                    <img class="text-white font-bold text-sm" src="{{ url_for('static', path='logo.png') }}">
                 </div>
-                <span class="text-2xl font-black gradient-text">ChatAI</span>
+                <span class="text-2xl font-black gradient-text">BnB ChatAI</span>
             </a>
 
             <!-- Desktop Navigation -->
