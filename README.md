@@ -1,59 +1,67 @@
 # ChatAI: SaaS Chatbot-as-a-Service Platform
 
 ## Overview
-ChatAI is a SaaS platform that enables businesses to create, customize, and embed AI-powered chatbots on their websites with minimal setup. Each business can manage its own chatbots, settings, and prompts, and easily integrate the chatbot widget using a simple JavaScript API.
+ChatAI is a SaaS platform that enables businesses to create, customize, and embed AI-powered chatbots on their websites with minimal setup. Each business can manage its own chatbots, settings, and prompts, upload business documents, and easily integrate the chatbot widget using a simple JavaScript API.
 
 ## Features
 - **Multi-Tenant Support:** Each business (tenant) has isolated chatbot configurations and data.
 - **User Authentication:** Secure signup and login for business users.
 - **Admin Panel:** Admin users can view and manage all users, chatbots, and business profiles from a modern web UI.
-- **User Dashboard:** Regular users can manage their business settings and chatbots from a dedicated dashboard.
+- **User Dashboard:** Regular users can manage their business settings, chatbots, and business documents from a dedicated dashboard.
 - **User Roles:** Users can be marked as admins (`is_admin` field). Admins have access to the admin panel and can manage all data.
-- **Chatbot Management:** Create, update, and manage multiple chatbots per business.
+- **Chatbot Management:** Create, update, and manage multiple chatbots per business, including custom prompts and suggested questions.
+- **Business Document Management:** Upload, preview, and manage business documents (FAQ, product lists, policies, etc.) per business profile.
 - **Custom Prompts & Settings:** Businesses can define chatbot behavior and appearance.
 - **Embeddable Widget:** Simple JS API to embed the chatbot on any website.
 - **RESTful API:** FastAPI-powered backend for all operations.
 - **Automated Migrations:** Easy commands to generate and apply database migrations.
+- **Modern UI:** Responsive dashboard and admin panel built with Tailwind CSS.
 
 ## Project Structure
 ```
-app/
-  main.py
+ChatAI/
   api/
-    v1/
-      endpoints/
-        auth.py
-        chatbot.py
-        tenant.py
-  core/
-    config.py
-    security.py
-  models/
-    user.py
-    tenant.py
-    chatbot.py
-    chats.py
-  schemas/
-    user.py
-    tenant.py
-    chatbot.py
-    chats.py
-  services/
-    chatbot_service.py
-  static/
-    js/
-      embed.js
-  templates/
-    admin_panel.html
-    chatbot_view.html
-    login.html
-    signup.html
-    dashboard.html
-  tests/
-migrations/
-  versions/
-README.md
-requirements.txt
+    index.py
+  app/
+    main.py
+    api/
+      v1/
+        endpoints/
+          auth.py
+          chatbot.py
+          tenant.py
+    core/
+      config.py
+      security.py
+    models/
+      user.py
+      tenant.py
+      chatbot.py
+      chats.py
+    schemas/
+      user.py
+      tenant.py
+      chatbot.py
+      chats.py
+    services/
+      chatbot_service.py
+    static/
+      js/
+        embed.js
+        ...
+    templates/
+      admin_panel.html
+      chatbot_view.html
+      dashboard.html
+      login.html
+      signup.html
+      ...
+  migrations/
+  README.md
+  requirements.txt
+  test.html
+  uploads/
+  vercel.json
 ```
 
 ## Getting Started
@@ -65,7 +73,10 @@ requirements.txt
 2. **Create a virtual environment:**
    ```bash
    python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   # On Unix/Mac:
+   source venv/bin/activate
+   # On Windows:
+   venv\Scripts\activate
    ```
 3. **Install dependencies:**
    ```bash
@@ -120,9 +131,22 @@ If you want to start fresh:
 - **Access:** `/dashboard?user_id=<user_id>`
 - **Features:**
   - View and edit business settings (name, settings JSON)
-  - View all chatbots owned by the user
-  - Create new chatbots for their business
+  - View, create, and edit chatbots for their business
+  - Manage chatbot prompts and suggested questions
+  - Upload, preview, and manage business documents (FAQ, product lists, policies, etc.)
   - Modern, responsive UI built with Tailwind CSS
+  - Analytics and statistics for chatbot and document usage
+
+## Business Document Management
+- **Upload documents** (PDF, CSV, etc.) and assign types (FAQ, product list, policy, etc.)
+- **Preview** document content (text or table preview)
+- **Download** or **delete** documents
+- **API endpoints** for document management:
+  - Upload: `/api/v1/tenant/business-document/` (POST, multipart/form-data)
+  - List: `/api/v1/tenant/business-document/?business_profile_id=...` (GET)
+  - Preview: `/api/v1/tenant/business-document/{id}/preview` (GET)
+  - Download: `/api/v1/tenant/business-document/{id}/download` (GET)
+  - Delete: `/api/v1/tenant/business-document/{id}` (DELETE)
 
 ## Admin Panel
 - **Access:** `/admin?user_id=<admin_user_id>`
@@ -171,8 +195,14 @@ If you want to start fresh:
 - [x] Admin panel & user roles
 - [x] User dashboard & login/signup pages
 - [x] Automated Alembic migrations
-- [ ] Dashboard UI (optional)
+- [x] Dashboard UI & document management
 - [ ] Deployment & docs
+
+## Contributing
+Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change.
+
+## Support
+For questions, issues, or feature requests, please open an issue in this repository.
 
 ## License
 MIT 
