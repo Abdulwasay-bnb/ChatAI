@@ -12,7 +12,7 @@ class BusinessProfileCreate(BusinessProfileBase):
     pass
 
 class BusinessProfileRead(BusinessProfileBase):
-    id: int
+    id: str
 
     class Config:
         orm_mode = True 
@@ -25,11 +25,11 @@ class BusinessDocumentBase(BaseModel):
     extracted_data: Optional[Dict[str, Any]] = {}
 
 class BusinessDocumentCreate(BusinessDocumentBase):
-    business_profile_id: int
+    business_profile_id: str
 
 class BusinessDocumentRead(BusinessDocumentBase):
-    id: int
-    business_profile_id: int
+    id: str
+    business_profile_id: str
     uploaded_at: datetime
 
     class Config:

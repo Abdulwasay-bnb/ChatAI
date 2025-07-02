@@ -14,6 +14,7 @@ from app.models.chatbot import Chatbot
 from app.models.tenant import BusinessProfile
 import app.models  
 from app.api.v1.endpoints.auth import get_current_user_from_cookie, get_current_user_from_cookie_optional
+from fastapi.exception_handlers import http_exception_handler
 # Intialze APP
 app = FastAPI(
     title="ChatAI SaaS Chatbot Service",
@@ -32,10 +33,9 @@ app.mount(
 admin_templates = Jinja2Templates(directory=os.path.join(os.path.dirname(__file__), "templates"))
 
 @app.get("/admin", response_class=HTMLResponse)
-def admin_panel(request: Request, db: Session = Depends(get_db), user_id: int = None):
-    user = db.query(User).filter(User.id == user_id).first()
+def admin_panel(request: Request, db: Session = Depends(get_db), user=Depends(get_current_user_from_cookie)):
     if not user or not user.is_admin:
-        raise HTTPException(status_code=403, detail="Not authorized")
+        raise HTTPException(status_code=401, detail="Not authorized")
     users = db.query(User).all()
     chatbots = db.query(Chatbot).all()
     tenants = db.query(BusinessProfile).all()
@@ -112,6 +112,12 @@ app.include_router(chatbot.router, prefix="/api/v1/chatbot", tags=["chatbot"])
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["auth"])
 app.include_router(tenant.router, prefix="/api/v1/tenant", tags=["tenant"])
 
+# Add a global exception handler for 401 to redirect to login
+@app.exception_handler(HTTPException)
+async def custom_http_exception_handler(request, exc):
+    if exc.status_code == 401:
+        return RedirectResponse(url="/login", status_code=303)
+    return await http_exception_handler(request, exc)
 
 cli = typer.Typer()
 

@@ -180,7 +180,7 @@
 {%block extrajs%}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    const userId = {{ user_id|tojson }};
+    const userId = "{{ user_id }}";
     let businessProfileId = {{ user.business_profile_id|tojson }};
 
     async function loadUserInfo() {

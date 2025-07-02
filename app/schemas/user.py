@@ -6,13 +6,13 @@ class UserBase(BaseModel):
     full_name: Optional[str] = None
     is_active: Optional[bool] = True
     is_admin: Optional[bool] = False
-    business_profile_id: Optional[int] = None
+    business_profile_id: Optional[str] = None
 
 class UserCreate(UserBase):
     password: str
 
 class UserRead(UserBase):
-    id: int
+    id: str
 
     class Config:
         orm_mode = True 

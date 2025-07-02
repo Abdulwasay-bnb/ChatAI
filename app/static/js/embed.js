@@ -81,7 +81,7 @@
         document.head.appendChild(style);
     }
 
-    // Get user_id from script tag or query param
+    // Get user_id from script tag or query param (for resource, not authentication)
     function getUserId() {
         var scripts = document.getElementsByTagName('script');
         for (var i = scripts.length - 1; i >= 0; i--) {
@@ -146,10 +146,12 @@
         setMode(dark);
     })();
 
+        let chatStarted = false;
     // Toggle chat window
     chatBtn.onclick = function() {
         chatWindow.style.display = chatWindow.style.display === 'none' ? 'flex' : 'none';
-        if (chatWindow.style.display === 'flex') {
+        if (chatWindow.style.display === 'flex' && !chatStarted) {
+            chatStarted = true;
             var userId = getUserId();
             var url = `${host}/api/v1/chatbot/view?user_id=${userId}`;
             iframe.src = url;

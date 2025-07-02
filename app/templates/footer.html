@@ -14,9 +14,9 @@
                 <div class="flex gap-4 text-sm font-medium">
                     <a href="{{ url_for('home') }}" class="hover:underline hover:text-cyan-100">Home</a>
                     {% if user_authenticated %}
-                    <a href="{{ url_for('dashboard_page') }}{% if user_id %}?user_id={{ user_id }}{% endif %}" class="hover:underline hover:text-cyan-100">Dashboard</a>
+                    <a href="{{ url_for('dashboard_page') }}" class="hover:underline hover:text-cyan-100">Dashboard</a>
                     {% if user and user.is_admin %}
-                    <a href="{{ url_for('admin_panel') }}?user_id={{ user.id }}" class="hover:underline hover:text-cyan-100">Admin</a>
+                    <a href="{{ url_for('admin_panel') }}" class="hover:underline hover:text-cyan-100">Admin</a>
                     {% endif %}
                     {% endif %}
                     <a href="mailto:support@chatai.com" class="hover:underline hover:text-cyan-100">Contact</a>

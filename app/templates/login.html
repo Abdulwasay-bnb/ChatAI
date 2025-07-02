@@ -48,9 +48,9 @@
             if (userRes.ok) {
                 const user = await userRes.json();
                 if (user.is_admin) {
-                    window.location.href = `/admin?user_id=${user.id}`;
+                    window.location.href = `/admin`;
                 } else {
-                    window.location.href = `/dashboard?user_id=${user.id}`;
+                    window.location.href = `/dashboard`;
                 }
             } else {
                 document.getElementById('error').innerText = 'Login succeeded but failed to fetch user info.';

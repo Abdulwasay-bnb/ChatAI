@@ -1,15 +1,17 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, JSON
+from sqlalchemy import Column, String, ForeignKey, JSON
 from sqlalchemy.orm import relationship
 from app.core.config import Base
+import uuid
+from app.core.db_types import GUID
 
 class Chatbot(Base):
     __tablename__ = "chatbots"
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(GUID(), primary_key=True, index=True, default=lambda: str(uuid.uuid4()))
     name = Column(String(255), nullable=False)
     prompt = Column(String(2048))
     settings = Column(JSON, default={})
-    owner_id = Column(Integer, ForeignKey("users.id"))
-    business_profile_id = Column(Integer, ForeignKey("business_profiles.id"))
+    owner_id = Column(GUID(), ForeignKey("users.id"))
+    business_profile_id = Column(GUID(), ForeignKey("business_profiles.id"))
 
     owner = relationship("User", back_populates="chatbots")
     business_profile = relationship("BusinessProfile", back_populates="chatbots")
@@ -18,7 +20,7 @@ class Chatbot(Base):
 
 class ChatbotSuggestion(Base):
     __tablename__ = "chatbot_suggestions"
-    id = Column(Integer, primary_key=True, index=True)
-    chatbot_id = Column(Integer, ForeignKey("chatbots.id"), nullable=False)
+    id = Column(GUID(), primary_key=True, index=True, default=lambda: str(uuid.uuid4()))
+    chatbot_id = Column(GUID(), ForeignKey("chatbots.id"), nullable=False)
     suggestions = Column(JSON, nullable=False)  # e.g., {"question1": "What is your name?", ...}
     chatbot = relationship("Chatbot", back_populates="suggestions") 

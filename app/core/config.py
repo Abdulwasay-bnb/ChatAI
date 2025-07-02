@@ -12,13 +12,14 @@ LLM_MODEL = os.environ.get("LLM_MODEL", "gpt-4o")
 DEVELOPER_MODEL = os.environ.get("DEVELOPER_MODEL", "True").lower() in ("true", "1", "yes")
 
 # Database settings
-MYSQL_USER = os.environ.get("MYSQL_USER", "root")
-MYSQL_PASSWORD = os.environ.get("MYSQL_PASSWORD", "password")
-MYSQL_HOST = os.environ.get("MYSQL_HOST", "localhost")
-MYSQL_PORT = os.environ.get("MYSQL_PORT", "3306")
-MYSQL_DB = os.environ.get("MYSQL_DB", "chatai_db")
+DB_USER = os.environ.get("DB_USER", "root")
+DB_PASSWORD = os.environ.get("DB_PASSWORD", "password")
+DB_HOST = os.environ.get("DB_HOST", "localhost")
+DB_PORT = os.environ.get("DB_PORT", "3306")
+DB_NAME = os.environ.get("DB_Name", "chatai_db")
+DB_ENGINE = os.environ.get("DB_ENGINE","mysql+pymysql")
 
-SQLALCHEMY_DATABASE_URL = f"postgresql+psycopg2://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DB}"
+SQLALCHEMY_DATABASE_URL = f"{DB_ENGINE}://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL, echo=True, future=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

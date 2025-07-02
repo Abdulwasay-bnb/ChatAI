@@ -5,14 +5,14 @@ class ChatbotBase(BaseModel):
     name: str
     prompt: Optional[str] = None
     settings: Optional[Dict[str, Any]] = {}
-    owner_id: Optional[int] = None
-    business_profile_id: Optional[int] = None
+    owner_id: Optional[str] = None
+    business_profile_id: Optional[str] = None
 
 class ChatbotCreate(ChatbotBase):
     pass
 
 class ChatbotRead(ChatbotBase):
-    id: int
+    id: str
 
     class Config:
         orm_mode = True
@@ -21,10 +21,10 @@ class ChatbotSuggestionBase(BaseModel):
     suggestions: Dict[str, str]
 
 class ChatbotSuggestionCreate(ChatbotSuggestionBase):
-    chatbot_id: int
+    chatbot_id: str
 
 class ChatbotSuggestionOut(ChatbotSuggestionBase):
-    id: int
-    chatbot_id: int
+    id: str
+    chatbot_id: str
     class Config:
         orm_mode = True 

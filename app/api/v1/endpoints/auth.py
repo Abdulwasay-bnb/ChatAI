@@ -9,6 +9,7 @@ from app.core.security import hash_password, verify_password, create_access_toke
 from app.models.tenant import BusinessProfile
 from datetime import datetime, timedelta
 from typing import Optional, List
+from uuid import UUID
 
 router = APIRouter()
 
@@ -75,7 +76,7 @@ def get_all_users(db: Session = Depends(get_db), admin: User = Depends(admin_req
     return db.query(User).all()
 
 @router.get("/user/{user_id}", response_model=UserRead)
-def get_user_by_id(user_id: int, db: Session = Depends(get_db)):
+def get_user_by_id(user_id: str, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -117,7 +118,7 @@ def reset_password(token: str = Body(...), new_password: str = Body(...), db: Se
         raise HTTPException(status_code=400, detail="Invalid or expired token")
 
 @router.put("/user/{user_id}", response_model=UserRead)
-def update_user_by_admin(user_id: int, user_update: UserCreate, db: Session = Depends(get_db), admin: User = Depends(admin_required)):
+def update_user_by_admin(user_id: str, user_update: UserCreate, db: Session = Depends(get_db), admin: User = Depends(admin_required)):
     db_user = db.query(User).filter(User.id == user_id).first()
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -131,7 +132,7 @@ def update_user_by_admin(user_id: int, user_update: UserCreate, db: Session = De
     return db_user
 
 @router.delete("/user/{user_id}")
-def delete_user_by_admin(user_id: int, db: Session = Depends(get_db), admin: User = Depends(admin_required)):
+def delete_user_by_admin(user_id: str, db: Session = Depends(get_db), admin: User = Depends(admin_required)):
     db_user = db.query(User).filter(User.id == user_id).first()
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found")

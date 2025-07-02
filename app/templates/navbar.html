@@ -13,7 +13,7 @@
             <div class="hidden md:flex items-center space-x-8">
                 {% if user_authenticated %}
                 <a href="{{ url_for('home') }}" class="text-light-text dark:text-dark-text hover:text-purple-500 dark:hover:text-cyan-400 transition-all hover:scale-105 font-bold">Home</a>
-                <a href="{{ url_for('dashboard_page') }}{% if user_id %}?user_id={{ user_id }}{% endif %}" class="text-light-text dark:text-dark-text hover:text-emerald-500 dark:hover:text-emerald-400 transition-all hover:scale-105 font-bold">Dashboard</a>
+                <a href="{{ url_for('dashboard_page') }}" class="text-light-text dark:text-dark-text hover:text-emerald-500 dark:hover:text-emerald-400 transition-all hover:scale-105 font-bold">Dashboard</a>
                 {% endif %}
             </div>
 
@@ -46,7 +46,7 @@
                         <a href="{{ url_for('login_page') }}" class="block px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-purple-100 dark:hover:bg-slate-700">Sign In</a>
                         {% else %}
                         {% if user and user.is_admin %}
-                        <a href="{{ url_for('admin_panel') }}?user_id={{ user.id }}" class="block px-4 py-2 text-gray-700 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-700">Admin</a>
+                        <a href="{{ url_for('admin_panel') }}" class="block px-4 py-2 text-gray-700 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-700">Admin</a>
                         {% endif %}
                         <form id="logoutForm" action="{{ url_for('auth.logout') }}" method="post">
                             <button type="submit" class="w-full text-left px-4 py-2 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-slate-700">Logout</button>
@@ -80,10 +80,10 @@
         <!-- Mobile Menu -->
         <div id="mobile-menu" class="md:hidden hidden flex-col space-y-2 mt-2 bg-white dark:bg-slate-800 rounded-lg shadow-lg p-4">
             {% if user_authenticated %}
-            <a href="{{ url_for('dashboard_page') }}{% if user_id %}?user_id={{ user_id }}{% endif %}" class="block text-light-text dark:text-dark-text hover:text-emerald-500 dark:hover:text-emerald-400 font-bold">Dashboard</a>
+            <a href="{{ url_for('dashboard_page') }}" class="block text-light-text dark:text-dark-text hover:text-emerald-500 dark:hover:text-emerald-400 font-bold">Dashboard</a>
             <a href="{{ url_for('home') }}" class="block text-light-text dark:text-dark-text hover:text-purple-500 dark:hover:text-cyan-400 font-bold">Home</a>
             {% if user and user.is_admin %}
-            <a href="{{ url_for('admin_panel') }}?user_id={{ user.id }}" class="block text-light-text dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-slate-700 font-bold">Admin</a>
+            <a href="{{ url_for('admin_panel') }}" class="block text-light-text dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-slate-700 font-bold">Admin</a>
             <form id="mobileLogoutForm" action="{{ url_for('auth.logout') }}" method="post">
                 <button type="submit" class="w-full text-left px-4 py-2 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-slate-700">Logout</button>
             </form>

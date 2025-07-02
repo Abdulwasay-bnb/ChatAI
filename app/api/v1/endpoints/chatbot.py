@@ -14,18 +14,19 @@ import os
 from app.api.v1.endpoints.auth import get_current_user_from_cookie
 from app.services.chatbot_service import ChatbotService
 from app.api.deps import get_db
+from uuid import UUID
 
 router = APIRouter()
 
 templates = Jinja2Templates(directory=os.path.join(os.path.dirname(__file__), '../../../templates'))
 
 @router.get("/view", response_class=HTMLResponse)
-def chatbot_view(user_id: int, request: Request):
+def chatbot_view(user_id: str, request: Request):
     # For demo, just render a simple chat UI. You can expand this to load chatbot settings, etc.
     return templates.TemplateResponse("chatbot_view.html", {"request": request, "user_id": user_id})
 
 @router.get("/embed/{user_id}")
-def get_embed_link(user_id: int, request: Request, db: Session = Depends(get_db)):
+def get_embed_link(user_id: str, request: Request, db: Session = Depends(get_db)):
     # Use FRONTEND_HOST from config if set, otherwise fallback to request.base_url
     base_url = config.FRONTEND_HOST.rstrip("/") if config.FRONTEND_HOST else str(request.base_url).rstrip("/")
     return {"embed_link": f"{base_url}/static/js/embed.js?user_id={user_id}"}
@@ -35,21 +36,21 @@ def create_chatbot(chatbot: ChatbotCreate, db: Session = Depends(get_db)):
     return ChatbotService.create_chatbot(chatbot, db)
 
 @router.get("/", response_model=List[ChatbotRead])
-def list_chatbots(business_profile_id: int = None, user_id: int = None, db: Session = Depends(get_db)):
+def list_chatbots(business_profile_id: str = None, user_id: str = None, db: Session = Depends(get_db)):
     return ChatbotService.list_chatbots(business_profile_id, user_id, db)
 
 @router.get("/{chatbot_id}", response_model=ChatbotRead)
-def get_chatbot(chatbot_id: int, db: Session = Depends(get_db)):
+def get_chatbot(chatbot_id: str, db: Session = Depends(get_db)):
     return ChatbotService.get_chatbot(chatbot_id, db)
 
 @router.put("/{chatbot_id}", response_model=ChatbotRead)
-def update_chatbot(chatbot_id: int, chatbot: ChatbotCreate, db: Session = Depends(get_db)):
+def update_chatbot(chatbot_id: str, chatbot: ChatbotCreate, db: Session = Depends(get_db)):
     return ChatbotService.update_chatbot(chatbot_id, chatbot, db)
 
 class ChatRequest(BaseModel):
     prompt: str
-    chatbot_id: int
-    user_id: int
+    chatbot_id: str
+    user_id: str
 
 @router.post("/chat")
 def chat_with_bot(request: ChatRequest, db: Session = Depends(get_db)):
@@ -61,11 +62,11 @@ def admin_required(user: User = Depends(get_current_user_from_cookie)):
     return user
 
 @router.delete("/{chatbot_id}")
-def delete_chatbot_by_admin(chatbot_id: int, db: Session = Depends(get_db), admin: User = Depends(admin_required)):
+def delete_chatbot_by_admin(chatbot_id: str, db: Session = Depends(get_db), admin: User = Depends(admin_required)):
     return ChatbotService.delete_chatbot(chatbot_id, db)
 
 @router.post("/{chatbot_id}/suggestions", response_model=ChatbotSuggestionOut)
-def add_suggestions(chatbot_id: int, suggestion: ChatbotSuggestionCreate, db: Session = Depends(get_db)):
+def add_suggestions(chatbot_id: str, suggestion: ChatbotSuggestionCreate, db: Session = Depends(get_db)):
     db_suggestion = db.query(ChatbotSuggestion).filter(ChatbotSuggestion.chatbot_id == chatbot_id).first()
     if db_suggestion:
         db_suggestion.suggestions = suggestion.suggestions
@@ -82,7 +83,7 @@ def add_suggestions(chatbot_id: int, suggestion: ChatbotSuggestionCreate, db: Se
     return db_suggestion
 
 @router.get("/{chatbot_id}/suggestions", response_model=ChatbotSuggestionOut)
-def get_suggestions(chatbot_id: int, db: Session = Depends(get_db)):
+def get_suggestions(chatbot_id: str, db: Session = Depends(get_db)):
     suggestion = db.query(ChatbotSuggestion).filter(ChatbotSuggestion.chatbot_id == chatbot_id).first()
     if not suggestion:
         raise HTTPException(status_code=404, detail="Suggestions not found")
