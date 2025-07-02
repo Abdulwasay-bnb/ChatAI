@@ -27,6 +27,7 @@ def create_business_profile(profile: BusinessProfileCreate, db: Session = Depend
     db.add(db_profile)
     db.commit()
     db.refresh(db_profile)
+    print("Hello")
     return db_profile
 
 @router.get("/", response_model=List[BusinessProfileRead])
@@ -34,14 +35,14 @@ def list_business_profiles(db: Session = Depends(get_db)):
     return db.query(BusinessProfile).all()
 
 @router.get("/{profile_id}", response_model=BusinessProfileRead)
-def get_business_profile(profile_id: int, db: Session = Depends(get_db)):
+def get_business_profile(profile_id: str, db: Session = Depends(get_db)):
     profile = db.query(BusinessProfile).filter(BusinessProfile.id == profile_id).first()
     if not profile:
         raise HTTPException(status_code=404, detail="Business profile not found")
     return profile
 
 @router.put("/{profile_id}", response_model=BusinessProfileRead)
-def update_business_profile(profile_id: int, profile: BusinessProfileCreate, db: Session = Depends(get_db)):
+def update_business_profile(profile_id: str, profile: BusinessProfileCreate, db: Session = Depends(get_db)):
     db_profile = db.query(BusinessProfile).filter(BusinessProfile.id == profile_id).first()
     if not db_profile:
         raise HTTPException(status_code=404, detail="Business profile not found")
@@ -57,7 +58,7 @@ def admin_required(user: User = Depends(get_current_user_from_cookie)):
     return user
 
 @router.delete("/{profile_id}")
-def delete_business_profile_by_admin(profile_id: int, db: Session = Depends(get_db), admin: User = Depends(admin_required)):
+def delete_business_profile_by_admin(profile_id: str, db: Session = Depends(get_db), admin: User = Depends(admin_required)):
     db_profile = db.query(BusinessProfile).filter(BusinessProfile.id == profile_id).first()
     if not db_profile:
         raise HTTPException(status_code=404, detail="Business profile not found")
@@ -104,7 +105,7 @@ def extract_data_from_file(file_path, filetype):
 
 @router.post("/business-document/", response_model=BusinessDocumentRead)
 def upload_business_document(
-    business_profile_id: int = Form(...),
+    business_profile_id: str = Form(...),
     type: str = Form(...),
     file: Optional[UploadFile] = File(None),
     url: Optional[str] = Form(None),
@@ -153,18 +154,18 @@ def upload_business_document(
     return doc
 
 @router.get("/business-document/", response_model=List[BusinessDocumentRead])
-def list_business_documents(business_profile_id: int, db: Session = Depends(get_db)):
+def list_business_documents(business_profile_id: str, db: Session = Depends(get_db)):
     return db.query(BusinessDocument).filter(BusinessDocument.business_profile_id == business_profile_id).all()
 
 @router.get("/business-document/{doc_id}", response_model=BusinessDocumentRead)
-def get_business_document(doc_id: int, db: Session = Depends(get_db)):
+def get_business_document(doc_id: str, db: Session = Depends(get_db)):
     doc = db.query(BusinessDocument).filter(BusinessDocument.id == doc_id).first()
     if not doc:
         raise HTTPException(status_code=404, detail="Document not found")
     return doc
 
 @router.delete("/business-document/{doc_id}")
-def delete_business_document(doc_id: int, db: Session = Depends(get_db)):
+def delete_business_document(doc_id: str, db: Session = Depends(get_db)):
     doc = db.query(BusinessDocument).filter(BusinessDocument.id == doc_id).first()
     if not doc:
         raise HTTPException(status_code=404, detail="Document not found")
@@ -176,7 +177,7 @@ def delete_business_document(doc_id: int, db: Session = Depends(get_db)):
     return {"msg": "Document deleted"}
 
 @router.get("/business-document/{doc_id}/preview")
-def preview_business_document(doc_id: int, db: Session = Depends(get_db)):
+def preview_business_document(doc_id: str, db: Session = Depends(get_db)):
     doc = db.query(BusinessDocument).filter(BusinessDocument.id == doc_id).first()
     if not doc:
         raise HTTPException(status_code=404, detail="Document not found")
@@ -185,7 +186,7 @@ def preview_business_document(doc_id: int, db: Session = Depends(get_db)):
     return JSONResponse(content=doc.extracted_data or {})
 
 @router.get("/business-document/{doc_id}/download")
-def download_business_document(doc_id: int, db: Session = Depends(get_db)):
+def download_business_document(doc_id: str, db: Session = Depends(get_db)):
     doc = db.query(BusinessDocument).filter(BusinessDocument.id == doc_id).first()
     if not doc or not doc.storage_path or not os.path.exists(doc.storage_path):
         raise HTTPException(status_code=404, detail="File not found")

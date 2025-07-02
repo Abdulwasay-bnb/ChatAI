@@ -21,7 +21,7 @@ class ChatbotService:
         return db_chatbot
 
     @staticmethod
-    def list_chatbots(business_profile_id: int = None, user_id: int = None, db: Session = None):
+    def list_chatbots(business_profile_id: str = None, user_id: str = None, db: Session = None):
         query = db.query(Chatbot)
         if business_profile_id is not None:
             query = query.filter(Chatbot.business_profile_id == business_profile_id)
@@ -30,14 +30,14 @@ class ChatbotService:
         return query.all()
 
     @staticmethod
-    def get_chatbot(chatbot_id: int, db: Session) -> Chatbot:
+    def get_chatbot(chatbot_id: str, db: Session) -> Chatbot:
         chatbot = db.query(Chatbot).filter(Chatbot.id == chatbot_id).first()
         if not chatbot:
             raise HTTPException(status_code=404, detail="Chatbot not found")
         return chatbot
 
     @staticmethod
-    def update_chatbot(chatbot_id: int, chatbot_data: ChatbotCreate, db: Session) -> Chatbot:
+    def update_chatbot(chatbot_id: str, chatbot_data: ChatbotCreate, db: Session) -> Chatbot:
         db_chatbot = db.query(Chatbot).filter(Chatbot.id == chatbot_id).first()
         if not db_chatbot:
             raise HTTPException(status_code=404, detail="Chatbot not found")
@@ -48,7 +48,7 @@ class ChatbotService:
         return db_chatbot
 
     @staticmethod
-    def delete_chatbot(chatbot_id: int, db: Session):
+    def delete_chatbot(chatbot_id: str, db: Session):
         db_chatbot = db.query(Chatbot).filter(Chatbot.id == chatbot_id).first()
         if not db_chatbot:
             raise HTTPException(status_code=404, detail="Chatbot not found")
@@ -57,7 +57,7 @@ class ChatbotService:
         return {"msg": "Chatbot deleted"}
 
     @staticmethod
-    def chat_with_bot(chatbot_id: int, user_prompt: str, user_id: int, db: Session):
+    def chat_with_bot(chatbot_id: str, user_prompt: str, user_id: str, db: Session):
         pipe = config.PIPE
         llm_model = config.LLM_MODEL
         chatbot = db.query(Chatbot).filter(Chatbot.id == chatbot_id).first()

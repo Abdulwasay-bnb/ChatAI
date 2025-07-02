@@ -34,6 +34,7 @@ async function loadUsers() {
             <td class="py-2 px-4">${u.full_name || '-'}</td>
             <td class="py-2 px-4">${u.email}</td>
             <td class="py-2 px-4">${u.business_profile_id}</td>
+            <td class="py-2 px-4">${u.id}</td>
             <td class="py-2 px-4 flex gap-2">
                 <button class="edit-user-btn bg-blue-500 hover:bg-blue-700 text-white px-2 py-1 rounded text-xs" data-id="${u.id}">Edit</button>
                 <button class="delete-user-btn bg-red-500 hover:bg-red-700 text-white px-2 py-1 rounded text-xs" data-id="${u.id}">Delete</button>
@@ -153,12 +154,22 @@ async function loadChatbots() {
     const chatbots = await res.json();
     const table = document.getElementById('chatbots-table');
     table.innerHTML = '';
-    chatbots.forEach(bot => {
+    for (const bot of chatbots) {
+        let ownerEmail = bot.owner_email || '';
+        if (!ownerEmail && bot.owner_id) {
+            try {
+                const userRes = await fetch(`/api/v1/auth/user/${bot.owner_id}`);
+                if (userRes.ok) {
+                    const user = await userRes.json();
+                    ownerEmail = user.email || '';
+                }
+            } catch {}
+        }
         const tr = document.createElement('tr');
         tr.className = 'border-b border-gray-200 dark:border-slate-700';
         tr.innerHTML = `
             <td class="py-2 px-4">${bot.name}</td>
-            <td class="py-2 px-4">${bot.owner_email || ''}</td>
+            <td class="py-2 px-4">${ownerEmail}</td>
             <td class="py-2 px-4">${bot.owner_id}</td>
             <td class="py-2 px-4">${bot.business_profile_id}</td>
             <td class="py-2 px-4 truncate max-w-xs">${bot.prompt}</td>
@@ -168,7 +179,7 @@ async function loadChatbots() {
             </td>
         `;
         table.appendChild(tr);
-    });
+    }
     bindChatbotActions();
 }
 function bindChatbotActions() {
@@ -230,8 +241,8 @@ function addChatbotModal() {
         <h3 class='font-bold text-lg mb-4 gradient-text'>Add Chatbot</h3>
         <form id='add-chatbot-form' class='space-y-3'>
             <input type='text' name='name' class='w-full border rounded px-3 py-2' placeholder='Name' required />
-            <input type='number' name='owner_id' class='w-full border rounded px-3 py-2' placeholder='Owner ID' required />
-            <input type='number' name='business_profile_id' class='w-full border rounded px-3 py-2' placeholder='Business Profile ID' required />
+            <input type='text' name='owner_id' class='w-full border rounded px-3 py-2' placeholder='Owner ID' required />
+            <input type='text' name='business_profile_id' class='w-full border rounded px-3 py-2' placeholder='Business Profile ID' required />
             <textarea name='prompt' class='w-full border rounded px-3 py-2' placeholder='Prompt'></textarea>
             <div class='flex gap-2 mt-4'>
                 <button type='submit' class='bg-blue-600 text-white px-4 py-2 rounded'>Add</button>
@@ -273,6 +284,17 @@ async function loadSuggestions() {
     const table = document.getElementById('suggestions-table');
     table.innerHTML = '';
     for (const bot of chatbots) {
+        let ownerId = bot.owner_id || '';
+        let ownerEmail = bot.owner_email || '';
+        if (!ownerEmail && ownerId) {
+            try {
+                const userRes = await fetch(`/api/v1/auth/user/${ownerId}`);
+                if (userRes.ok) {
+                    const user = await userRes.json();
+                    ownerEmail = user.email || '';
+                }
+            } catch {}
+        }
         const resSug = await fetch(`/api/v1/chatbot/${bot.id}/suggestions`);
         if (!resSug.ok) continue;
         const suggestion = await resSug.json();
@@ -280,6 +302,9 @@ async function loadSuggestions() {
         tr.className = 'border-b border-gray-200 dark:border-slate-700';
         tr.innerHTML = `
             <td class="py-2 px-4">${bot.name}</td>
+            <td class="py-2 px-4">${bot.id}</td>
+            <td class="py-2 px-4">${ownerId}</td>
+            <td class="py-2 px-4">${ownerEmail}</td>
             <td class="py-2 px-4">${Object.values(suggestion.suggestions).join('<br>')}</td>
             <td class="py-2 px-4 flex gap-2">
                 <button class="edit-suggestion-btn bg-blue-500 hover:bg-blue-700 text-white px-2 py-1 rounded text-xs" data-id="${bot.id}">Edit</button>
@@ -338,13 +363,29 @@ async function loadTenants() {
     const tenants = await res.json();
     const table = document.getElementById('tenants-table');
     table.innerHTML = '';
-    tenants.forEach(t => {
+    for (const t of tenants) {
+        let ownerId = t.owner_id || '';
+        let ownerEmail = t.owner_email || '';
+        if ((!ownerId || !ownerEmail) && t.id) {
+            // Try to fetch the first user with this business_profile_id
+            try {
+                const usersRes = await fetch('/api/v1/auth/user/all');
+                if (usersRes.ok) {
+                    const users = await usersRes.json();
+                    const owner = users.find(u => u.business_profile_id === t.id);
+                    if (owner) {
+                        ownerId = owner.id;
+                        ownerEmail = owner.email;
+                    }
+                }
+            } catch {}
+        }
         const tr = document.createElement('tr');
         tr.className = 'border-b border-gray-200 dark:border-slate-700';
         tr.innerHTML = `
             <td class="py-2 px-4">${t.name}</td>
-            <td class="py-2 px-4">${t.owner_email || ''}</td>
-            <td class="py-2 px-4">${t.owner_id || ''}</td>
+            <td class="py-2 px-4">${ownerEmail}</td>
+            <td class="py-2 px-4">${ownerId}</td>
             <td class="py-2 px-4">${t.id}</td>
             <td class="py-2 px-4 truncate max-w-xs">${JSON.stringify(t.settings)}</td>
             <td class="py-2 px-4 flex gap-2">
@@ -353,7 +394,7 @@ async function loadTenants() {
             </td>
         `;
         table.appendChild(tr);
-    });
+    }
     bindTenantActions();
 }
 function bindTenantActions() {
@@ -468,14 +509,16 @@ async function loadDocuments() {
         if (!docsRes.ok) continue;
         const docs = await docsRes.json();
         docs.forEach(doc => {
+            const uploaded = doc.uploaded_at ? new Date(doc.uploaded_at).toLocaleString() : '';
             const tr = document.createElement('tr');
             tr.className = 'border-b border-gray-200 dark:border-slate-700';
             tr.innerHTML = `
                 <td class="py-2 px-4">${doc.filename || doc.url || ''}</td>
                 <td class="py-2 px-4">${doc.type}</td>
                 <td class="py-2 px-4">${t.name}</td>
-                <td class="py-2 px-4">${doc.created_at || ''}</td>
+                <td class="py-2 px-4">${uploaded}</td>
                 <td class="py-2 px-4 flex gap-2">
+                    <button class="view-document-btn bg-blue-500 hover:bg-blue-700 text-white px-2 py-1 rounded text-xs" data-id="${doc.id}">View</button>
                     <button class="delete-document-btn bg-red-500 hover:bg-red-700 text-white px-2 py-1 rounded text-xs" data-id="${doc.id}">Delete</button>
                     <a href="/api/v1/tenant/business-document/${doc.id}/download" class="bg-green-500 hover:bg-green-700 text-white px-2 py-1 rounded text-xs" target="_blank">Download</a>
                 </td>
@@ -484,6 +527,7 @@ async function loadDocuments() {
         });
     }
     bindDocumentActions();
+    bindViewDocumentActions();
 }
 function bindDocumentActions() {
     document.querySelectorAll('.delete-document-btn').forEach(btn => {
@@ -493,6 +537,27 @@ function bindDocumentActions() {
             const res = await fetch(`/api/v1/tenant/business-document/${id}`, { method: 'DELETE' });
             if (res.ok) loadDocuments();
             else alert('Failed to delete document.');
+        };
+    });
+}
+function bindViewDocumentActions() {
+    document.querySelectorAll('.view-document-btn').forEach(btn => {
+        btn.onclick = async function() {
+            const id = btn.dataset.id;
+            const res = await fetch(`/api/v1/tenant/business-document/${id}/preview`);
+            if (!res.ok) return alert('Failed to load document preview.');
+            const data = await res.json();
+            let content = '';
+            if (data.text) {
+                content = `<pre style='max-height:400px;overflow:auto;'>${data.text}</pre>`;
+            } else if (data.rows) {
+                content = '<table class="w-full text-xs">' + data.rows.map(row => `<tr>${row.map(cell => `<td class='border px-1'>${cell}</td>`).join('')}</tr>`).join('') + '</table>';
+            } else if (data.error) {
+                content = `<div class='text-red-600'>Error: ${data.error}</div>`;
+            } else {
+                content = '<div>No extracted data available.</div>';
+            }
+            createModal(`<h3 class='font-bold text-lg mb-4 gradient-text'>Extracted Data</h3>${content}`);
         };
     });
 }

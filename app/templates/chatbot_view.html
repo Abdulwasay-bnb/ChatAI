@@ -160,7 +160,7 @@ body.dark-mode, html.dark-mode {
   </form>
 </div>
 <script>
-const userId = "{{ user_id }}";
+const userId = {{ user_id|tojson }};
 let chatbotId = null;
 const messagesDiv = document.getElementById('messages');
 const chatForm = document.getElementById('chatForm');

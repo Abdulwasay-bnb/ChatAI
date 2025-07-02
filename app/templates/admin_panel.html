@@ -2,16 +2,17 @@
 {% block content %}
 <div class="flex mt-16 min-h-screen">
     <!-- Sidebar -->
-    <aside class="w-64 backdrop-blur-2xl bg-transparent/5 text-white flex flex-col py-8 px-4 shadow-xl rounded-r-3xl glass-card">
-        <div class="mb-10 text-2xl font-black tracking-wide gradient-text">Admin Panel</div>
-        <nav class="flex flex-col gap-2">
-            <button class="sidebar-btn py-2 px-4 bg-transparent/40 rounded-lg text-left hover:bg-blue-600 transition" data-tab="users">Users</button>
-            <button class="sidebar-btn py-2 px-4 bg-transparent/40 rounded-lg text-left hover:bg-blue-600 transition" data-tab="chatbots">Chatbots</button>
-            <button class="sidebar-btn py-2 px-4 bg-transparent/40 rounded-lg text-left hover:bg-blue-600 transition" data-tab="suggestions">Chatbot Suggestions</button>
-            <button class="sidebar-btn py-2 px-4 bg-transparent/40 rounded-lg text-left hover:bg-blue-600 transition" data-tab="tenants">Business Profiles</button>
-            <button class="sidebar-btn py-2 px-4 bg-transparent/40 rounded-lg text-left hover:bg-blue-600 transition" data-tab="documents">Business Documents</button>
+    <div class="w-64 h-screen"></div>
+    <aside class="w-64 h-screen fixed top-0 left-0 z-50 backdrop-blur-2xl bg-transparent/5 text-white flex flex-col py-6 px-4 dark:bg-transparent/10 transition-colors duration-300">
+        <div class="mb-10 text-2xl font-black tracking-wide gradient-text drop-shadow-lg">Admin Panel</div>
+        <nav class="flex flex-col gap-2 mt-4">
+            <button class="sidebar-btn py-2 px-4 bg-black/20 rounded-lg text-left hover:bg-blue-600 transition font-semibold tracking-wide" data-tab="users">Users</button>
+            <button class="sidebar-btn py-2 px-4 bg-black/20 rounded-lg text-left hover:bg-blue-600 transition font-semibold tracking-wide" data-tab="chatbots">Chatbots</button>
+            <button class="sidebar-btn py-2 px-4 bg-black/20 rounded-lg text-left hover:bg-blue-600 transition font-semibold tracking-wide" data-tab="suggestions">Chatbot Suggestions</button>
+            <button class="sidebar-btn py-2 px-4 bg-black/20 rounded-lg text-left hover:bg-blue-600 transition font-semibold tracking-wide" data-tab="tenants">Business Profiles</button>
+            <button class="sidebar-btn py-2 px-4 bg-black/20 rounded-lg text-left hover:bg-blue-600 transition font-semibold tracking-wide" data-tab="documents">Business Documents</button>
         </nav>
-        <div class="mt-auto text-xs text-blue-200 pt-8">&copy; {{ 2025 }} ChatAI Admin Panel</div>
+        <div class="mt-auto text-xs text-blue-200 pt-8 drop-shadow">&copy; {{ 2025 }} ChatAI Admin Panel</div>
     </aside>
     <!-- Main Content -->
     <main class="flex-1 p-10 bg-gray-50 dark:bg-dark-primary">
@@ -32,7 +33,8 @@
                         <tr class="bg-blue-50 dark:bg-slate-700">
                             <th class="py-2 px-4 text-left">Name</th>
                             <th class="py-2 px-4 text-left">Email</th>
-                            <th class="py-2 px-4 text-left">Business</th>
+                            <th class="py-2 px-4 text-left">Business ID</th>
+                            <th class="py-2 px-4 text-left">User ID</th>
                             <th class="py-2 px-4 text-left">Actions</th>
                         </tr>
                     </thead>
@@ -53,7 +55,7 @@
                             <th class="py-2 px-4 text-left">Name</th>
                             <th class="py-2 px-4 text-left">Owner Email</th>
                             <th class="py-2 px-4 text-left">Owner ID</th>
-                            <th class="py-2 px-4 text-left">Business</th>
+                            <th class="py-2 px-4 text-left">Business ID</th>
                             <th class="py-2 px-4 text-left">Prompt</th>
                             <th class="py-2 px-4 text-left">Actions</th>
                         </tr>
@@ -73,6 +75,9 @@
                     <thead>
                         <tr class="bg-purple-100 dark:bg-slate-700">
                             <th class="py-2 px-4 text-left">Chatbot</th>
+                            <th class="py-2 px-4 text-left">Suggestions ID</th>
+                            <th class="py-2 px-4 text-left">Chatbot ID</th>
+                            <th class="py-2 px-4 text-left">Owner Email</th>
                             <th class="py-2 px-4 text-left">Suggestions</th>
                             <th class="py-2 px-4 text-left">Actions</th>
                         </tr>
@@ -94,7 +99,7 @@
                             <th class="py-2 px-4 text-left">Name</th>
                             <th class="py-2 px-4 text-left">Owner Email</th>
                             <th class="py-2 px-4 text-left">Owner ID</th>
-                            <th class="py-2 px-4 text-left">ID</th>
+                            <th class="py-2 px-4 text-left">Buisness ID</th>
                             <th class="py-2 px-4 text-left">Settings</th>
                             <th class="py-2 px-4 text-left">Actions</th>
                         </tr>
