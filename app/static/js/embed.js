@@ -106,30 +106,19 @@
     chatWindow.className = 'cbt-embed-window';
     chatWindow.style.display = 'none';
     chatWindow.innerHTML = `
-      <div class="cbt-embed-header">
-        <button class="cbt-embed-mode" title="Toggle light/dark mode">🌙</button>
-        <span>Chatbot</span>
-        <button class="cbt-embed-close" title="Close">&times;</button>
-      </div>
       <iframe class="cbt-embed-iframe" allowtransparency="true"></iframe>
     `;
     document.body.appendChild(chatWindow);
 
-    var modeBtn = chatWindow.querySelector('.cbt-embed-mode');
-    var closeBtn = chatWindow.querySelector('.cbt-embed-close');
     var iframe = chatWindow.querySelector('iframe');
 
     // Light/dark mode logic
     function setMode(dark) {
         if (dark) {
             chatWindow.classList.add('cbt-dark');
-            modeBtn.innerHTML = '☀️';
-            modeBtn.title = 'Switch to light mode';
             localStorage.setItem('cbt-embed-dark', '1');
         } else {
             chatWindow.classList.remove('cbt-dark');
-            modeBtn.innerHTML = '🌙';
-            modeBtn.title = 'Switch to dark mode';
             localStorage.setItem('cbt-embed-dark', '0');
         }
         // Pass mode to iframe
@@ -137,39 +126,96 @@
             iframe.contentWindow.postMessage({ type: 'cbt-mode', dark }, '*');
         }
     }
-    modeBtn.onclick = function() {
-        var isDark = chatWindow.classList.contains('cbt-dark');
-        setMode(!isDark);
-    };
     (function initMode() {
         var dark = localStorage.getItem('cbt-embed-dark') === '1';
         setMode(dark);
     })();
 
-        let chatStarted = false;
+    let chatStarted = false;
+    // Fetch chatbot style for user
+    async function fetchChatbotStyle(chatbotId, userId) {
+        try {
+            var res = await fetch(`${host}/api/v1/chatbot/${chatbotId}/style?user_id=${userId}`);
+            if (!res.ok) return null;
+            return await res.json();
+        } catch { return null; }
+    }
+    // Extract chatbotId from API (first bot for user)
+    async function fetchChatbotId(userId) {
+        try {
+            var res = await fetch(`${host}/api/v1/chatbot/?user_id=${userId}`);
+            var bots = await res.json();
+            if (Array.isArray(bots) && bots.length > 0) return bots[0].id;
+        } catch {}
+        return null;
+    }
+    // Send style to iframe
+    function sendStyleToIframe(style, chatbotId) {
+        if (!iframe || !iframe.contentWindow) return;
+        if (!style) return;
+        var s = style.style_json || {};
+        var styleVars = {
+            '--cbt-bubble-bg': s.bubbleColor || '#f5f6fa',
+            '--cbt-bubble-color': s.bubbleText || '#222',
+            '--cbt-user-bubble-bg': s.userBubbleColor || '#e5e5e5',
+            '--cbt-user-bubble-color': s.userBubbleText || '#222',
+            '--cbt-btn-bg': s.buttonColor || '#222',
+            '--cbt-btn-color': s.buttonText || '#fff',
+            '--cbt-border-radius': (s.borderRadius || 18) + 'px',
+            '--cbt-font-family': s.font || 'Segoe UI',
+        };
+        iframe.contentWindow.postMessage({
+            type: 'cbt-style',
+            styleVars,
+            greeting: s.greeting,
+            chatbotName: s.chatbotName,
+            logo: s.logo,
+            chatbotId: chatbotId
+        }, '*');
+    }
     // Toggle chat window
-    chatBtn.onclick = function() {
+    chatBtn.onclick = async function() {
         chatWindow.style.display = chatWindow.style.display === 'none' ? 'flex' : 'none';
         if (chatWindow.style.display === 'flex' && !chatStarted) {
             chatStarted = true;
             var userId = getUserId();
+            if (!userId) {
+                console.error('No userId found for chatbot embed!');
+                return;
+            }
+            console.log('userId:', userId);
             var url = `${host}/api/v1/chatbot/view?user_id=${userId}`;
             iframe.src = url;
-            // Pass mode to iframe after load
-            iframe.onload = function() {
+            iframe.onload = async function() {
                 var dark = chatWindow.classList.contains('cbt-dark');
                 iframe.contentWindow.postMessage({ type: 'cbt-mode', dark }, '*');
+                var chatbotId = await fetchChatbotId(userId);
+                if (!chatbotId) {
+                    console.error('No chatbotId found for user:', userId);
+                    return;
+                }
+                console.log('chatbotId:', chatbotId);
+                var style = await fetchChatbotStyle(chatbotId, userId);
+                sendStyleToIframe(style, chatbotId);
             };
         }
     };
-    closeBtn.onclick = function() {
-        chatWindow.style.display = 'none';
-    };
 
-    // Listen for mode change requests from iframe (optional, for two-way sync)
+    // Listen for close event from iframe
     window.addEventListener('message', function(e) {
+        if (e.data && e.data.type === 'cbt-close') {
+            chatWindow.style.display = 'none';
+        }
         if (e.data && e.data.type === 'cbt-mode-request') {
             setMode(!!e.data.dark);
+        }
+        if (e.data && e.data.type === 'cbt-style') {
+            sendStyleToIframe({ style_json: {
+                ...e.data.styleVars,
+                greeting: e.data.greeting,
+                chatbotName: e.data.chatbotName,
+                logo: e.data.logo
+            }}, e.data.chatbotId);
         }
     });
 })();

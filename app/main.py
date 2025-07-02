@@ -15,6 +15,7 @@ from app.models.tenant import BusinessProfile
 import app.models  
 from app.api.v1.endpoints.auth import get_current_user_from_cookie, get_current_user_from_cookie_optional
 from fastapi.exception_handlers import http_exception_handler
+from fastapi.middleware.cors import CORSMiddleware
 # Intialze APP
 app = FastAPI(
     title="ChatAI SaaS Chatbot Service",
@@ -31,6 +32,14 @@ app.mount(
 
 # Admin templates
 admin_templates = Jinja2Templates(directory=os.path.join(os.path.dirname(__file__), "templates"))
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Or specify ["http://localhost:8000"] for more security
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/admin", response_class=HTMLResponse)
 def admin_panel(request: Request, db: Session = Depends(get_db), user=Depends(get_current_user_from_cookie)):

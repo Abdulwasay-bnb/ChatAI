@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
-from app.models.chatbot import Chatbot
-from app.schemas.chatbot import ChatbotCreate
+from app.models.chatbot import Chatbot, ChatbotStyle
+from app.schemas.chatbot import ChatbotCreate, ChatbotStyleCreate
 from app.core import config
 from fastapi import HTTPException
 import json
@@ -102,6 +102,27 @@ class ChatbotService:
                     return {"response": content}
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
+
+    @staticmethod
+    def get_chatbot_style(chatbot_id: str, user_id: str, db: Session):
+        style = db.query(ChatbotStyle).filter_by(chatbot_id=chatbot_id, user_id=user_id).first()
+        if style:
+            return style
+        # Fallback to default: first style for chatbot, or None
+        default_style = db.query(ChatbotStyle).filter_by(chatbot_id=chatbot_id).first()
+        return default_style
+
+    @staticmethod
+    def set_chatbot_style(style_data: ChatbotStyleCreate, db: Session):
+        style = db.query(ChatbotStyle).filter_by(chatbot_id=style_data.chatbot_id, user_id=style_data.user_id).first()
+        if style:
+            style.style_json = style_data.style_json
+        else:
+            style = ChatbotStyle(**style_data.dict())
+            db.add(style)
+        db.commit()
+        db.refresh(style)
+        return style
 
 CHROMA_DIR = 'chroma_db'
 chroma_client = chromadb.Client(Settings(persist_directory=CHROMA_DIR))

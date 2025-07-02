@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, Request, Security
 from sqlalchemy.orm import Session
 from app.core.config import get_db
-from app.models.chatbot import Chatbot, ChatbotSuggestion
+from app.models.chatbot import Chatbot, ChatbotSuggestion, ChatbotStyle
 from app.models.user import User
-from app.schemas.chatbot import ChatbotCreate, ChatbotRead, ChatbotSuggestionCreate, ChatbotSuggestionOut
+from app.schemas.chatbot import ChatbotCreate, ChatbotRead, ChatbotSuggestionCreate, ChatbotSuggestionOut, ChatbotStyleCreate, ChatbotStyleRead
 from typing import List
 from app.core import config
 from pydantic import BaseModel
@@ -15,6 +15,7 @@ from app.api.v1.endpoints.auth import get_current_user_from_cookie
 from app.services.chatbot_service import ChatbotService
 from app.api.deps import get_db
 from uuid import UUID
+from fastapi import status
 
 router = APIRouter()
 
@@ -87,4 +88,20 @@ def get_suggestions(chatbot_id: str, db: Session = Depends(get_db)):
     suggestion = db.query(ChatbotSuggestion).filter(ChatbotSuggestion.chatbot_id == chatbot_id).first()
     if not suggestion:
         raise HTTPException(status_code=404, detail="Suggestions not found")
-    return suggestion 
+    return suggestion
+
+@router.get("/{chatbot_id}/style", response_model=ChatbotStyleRead)
+def get_chatbot_style(chatbot_id: str, user_id: str = None, db: Session = Depends(get_db)):
+    # If user_id is not provided, fallback to default style for chatbot
+    style = ChatbotService.get_chatbot_style(chatbot_id, user_id, db)
+    if not style:
+        raise HTTPException(status_code=404, detail="Style not found")
+    return style
+
+@router.post("/{chatbot_id}/style", response_model=ChatbotStyleRead, status_code=status.HTTP_201_CREATED)
+def set_chatbot_style(chatbot_id: str, style: ChatbotStyleCreate, db: Session = Depends(get_db), user: User = Depends(get_current_user_from_cookie)):
+    # Only allow user to set their own style
+    if style.user_id != str(user.id):
+        raise HTTPException(status_code=403, detail="Cannot set style for another user")
+    style.chatbot_id = chatbot_id
+    return ChatbotService.set_chatbot_style(style, db) 

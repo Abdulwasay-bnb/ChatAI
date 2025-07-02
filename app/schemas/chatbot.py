@@ -27,4 +27,18 @@ class ChatbotSuggestionOut(ChatbotSuggestionBase):
     id: str
     chatbot_id: str
     class Config:
-        orm_mode = True 
+        orm_mode = True
+
+class ChatbotStyleBase(BaseModel):
+    style_json: Dict[str, Any]
+    class Config:
+        orm_mode = True
+
+class ChatbotStyleCreate(ChatbotStyleBase):
+    chatbot_id: str
+    user_id: str
+
+class ChatbotStyleRead(ChatbotStyleBase):
+    id: str
+    chatbot_id: str
+    user_id: str 

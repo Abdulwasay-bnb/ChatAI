@@ -23,4 +23,14 @@ class ChatbotSuggestion(Base):
     id = Column(GUID(), primary_key=True, index=True, default=lambda: str(uuid.uuid4()))
     chatbot_id = Column(GUID(), ForeignKey("chatbots.id"), nullable=False)
     suggestions = Column(JSON, nullable=False)  # e.g., {"question1": "What is your name?", ...}
-    chatbot = relationship("Chatbot", back_populates="suggestions") 
+    chatbot = relationship("Chatbot", back_populates="suggestions")
+
+class ChatbotStyle(Base):
+    __tablename__ = "chatbot_styles"
+    id = Column(GUID(), primary_key=True, index=True, default=lambda: str(uuid.uuid4()))
+    chatbot_id = Column(GUID(), ForeignKey("chatbots.id"), nullable=False)
+    user_id = Column(GUID(), ForeignKey("users.id"), nullable=False)
+    style_json = Column(JSON, nullable=False, default={})
+
+    chatbot = relationship("Chatbot", backref="styles")
+    user = relationship("User") 

@@ -1,5 +1,13 @@
 <style>
 :root {
+  --cbt-bubble-bg: #f5f6fa;
+  --cbt-bubble-color: #222;
+  --cbt-user-bubble-bg: #e5e5e5;
+  --cbt-user-bubble-color: #222;
+  --cbt-btn-bg: #222;
+  --cbt-btn-color: #fff;
+  --cbt-border-radius: 18px;
+  --cbt-font-family: 'Segoe UI', 'Arial', sans-serif;
   --bg-main-light: #fff;
   --bg-main-dark: #18191a;
   --bg-chat-light: #f5f6fa;
@@ -26,7 +34,7 @@ body, html {
   padding: 0;
   background: var(--bg-main-light);
   color: var(--primary);
-  font-family: 'Segoe UI', 'Arial', sans-serif;
+  font-family: var(--cbt-font-family);
   transition: background 0.3s, color 0.3s;
 }
 body.dark-mode, html.dark-mode {
@@ -40,8 +48,8 @@ body.dark-mode, html.dark-mode {
   border: 1px solid var(--border-light);
   display: flex;
   flex-direction: column;
-  border-radius:12px;
-  height: 99.5%;
+  border-radius: var(--cbt-border-radius);
+  height: 90%;
   transition: background 0.3s, border 0.3s;
 }
 .dark-mode #chatbot-container {
@@ -68,7 +76,7 @@ body.dark-mode, html.dark-mode {
 .bubble {
   max-width: 80%;
   padding: 12px 18px;
-  border-radius: 18px;
+  border-radius: var(--cbt-border-radius);
   font-size: 1rem;
   margin-bottom: 2px;
   word-break: break-word;
@@ -76,8 +84,8 @@ body.dark-mode, html.dark-mode {
   transition: background 0.3s, color 0.3s;
 }
 .bubble.user {
-  background: var(--user-bubble-light);
-  color: var(--user-msg-light);
+  background: var(--cbt-user-bubble-bg);
+  color: var(--cbt-user-bubble-color);
   border-bottom-right-radius: 6px;
 }
 .dark-mode .bubble.user {
@@ -85,8 +93,8 @@ body.dark-mode, html.dark-mode {
   color: var(--user-msg-dark);
 }
 .bubble.bot {
-  background: var(--bot-bubble-light);
-  color: var(--bot-msg-light);
+  background: var(--cbt-bubble-bg);
+  color: var(--cbt-bubble-color);
   border-bottom-left-radius: 6px;
 }
 .dark-mode .bubble.bot {
@@ -119,10 +127,10 @@ body.dark-mode, html.dark-mode {
   color: var(--primary-dark);
 }
 #sendBtn {
-  background: var(--primary);
-  color: #fff;
+  background: var(--cbt-btn-bg);
+  color: var(--cbt-btn-color);
   border: none;
-  border-radius: 12px;
+  border-radius: var(--cbt-border-radius);
   padding: 10px 22px;
   margin-left: 10px;
   font-size: 1rem;
@@ -151,9 +159,17 @@ body.dark-mode, html.dark-mode {
 }
 </style>
 
-<div id="chatbot-container">
-  <div id="messages">  <div id="suggested-questions" style="padding: 8px 16px 0 16px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-start; background: none;"></div>
+<div id="chatbot-meta" style="display: flex; align-items: center; gap: 12px; padding: 16px 20px 0 20px;">
+  <img id="chatbotLogo" src="" alt="Logo" style="width: 40px; height: 40px; border-radius: 50%; display: none;" />
+  <span id="chatbotName" style="font-weight: bold; font-size: 1.2rem;">Chatbot</span>
+  <button id="cbtModeBtn" title="Toggle light/dark mode" style="margin-left:auto;font-size:1.3rem;background:none;border:none;cursor:pointer; display:hidden;"></button>
+  <button id="cbtCloseBtn" title="Close" style="font-size:1.5rem;background:none;border:none;cursor:pointer;margin-left:8px;">&times;</button>
 </div>
+<div id="chatbot-container">
+  <div id="messages">
+    <div id="greetingMsg" class="bubble bot" style="margin-bottom: 12px;">Hi! How can I help you?</div>
+    <div id="suggested-questions" style="padding: 8px 16px 0 16px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-start; background: none;"></div>
+  </div>
   <form id="chatForm">
     <input id="chatInput" type="text" placeholder="Type your message..." autocomplete="off" />
     <button id="sendBtn" type="submit">Send</button>
@@ -167,9 +183,32 @@ const chatForm = document.getElementById('chatForm');
 const chatInput = document.getElementById('chatInput');
 const sendBtn = document.getElementById('sendBtn');
 let waitingForResponse = false;
+const greetingMsg = document.getElementById('greetingMsg');
+const chatbotLogo = document.getElementById('chatbotLogo');
+const chatbotName = document.getElementById('chatbotName');
 
-// Listen for mode messages from parent
+// Listen for style updates from parent
 window.addEventListener('message', function(e) {
+  if (e.data && e.data.type === 'cbt-style') {
+    // Set CSS variables
+    for (const key in e.data.styleVars) {
+      document.documentElement.style.setProperty(key, e.data.styleVars[key]);
+    }
+    // Set greeting
+    if (e.data.greeting !== undefined) greetingMsg.textContent = e.data.greeting;
+    // Set chatbot name
+    if (e.data.chatbotName !== undefined) chatbotName.textContent = e.data.chatbotName;
+    // Set logo
+    if (e.data.logo) {
+      chatbotLogo.src = e.data.logo;
+      chatbotLogo.style.display = '';
+    } else {
+      chatbotLogo.style.display = 'none';
+    }
+    if (e.data.chatbotId) {
+      window.chatbotId = e.data.chatbotId;
+    }
+  }
   if (e.data && e.data.type === 'cbt-mode') {
     setMode(!!e.data.dark);
   }
@@ -183,7 +222,6 @@ function setMode(dark) {
     document.documentElement.classList.remove('dark-mode');
   }
 }
-
 function addMessage(content, from) {
   const msg = document.createElement('div');
   msg.className = 'message ' + from;
@@ -194,7 +232,6 @@ function addMessage(content, from) {
   messagesDiv.appendChild(msg);
   messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
-
 async function fetchChatbotId() {
   const res = await fetch('/api/v1/chatbot/?user_id=' + userId);
   const bots = await res.json();
@@ -204,7 +241,6 @@ async function fetchChatbotId() {
     chatbotId = null;
   }
 }
-
 async function fetchSuggestions() {
   if (!chatbotId) return;
   try {
@@ -228,7 +264,6 @@ async function fetchSuggestions() {
     }
   } catch {}
 }
-
 async function init() {
   await fetchChatbotId();
   if (!chatbotId) {
@@ -239,7 +274,6 @@ async function init() {
   }
   await fetchSuggestions();
 }
-
 chatForm.onsubmit = async function(e) {
   e.preventDefault();
   if (waitingForResponse) return;
@@ -276,6 +310,22 @@ chatForm.onsubmit = async function(e) {
   chatInput.focus();
   waitingForResponse = false;
 };
-
 init();
+
+document.getElementById('cbtCloseBtn').onclick = function() {
+  if (window.parent !== window) {
+    window.parent.postMessage({ type: 'cbt-close' }, '*');
+  } else {
+    // fallback: hide self
+    document.body.style.display = 'none';
+  }
+};
+document.getElementById('cbtModeBtn').onclick = function() {
+  const isDark = document.body.classList.contains('dark-mode');
+  if (window.parent !== window) {
+    window.parent.postMessage({ type: 'cbt-mode-request', dark: !isDark }, '*');
+  } else {
+    setMode(!isDark);
+  }
+};
 </script>
